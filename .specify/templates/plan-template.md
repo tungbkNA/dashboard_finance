@@ -17,15 +17,17 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Backend Language/Version**: Java 21 / Spring Boot  
+**Frontend Language/Version**: TypeScript / Vue 3 + Vite  
+**Primary Dependencies (BE)**: Spring Boot, Maven, PostgreSQL  
+**Primary Dependencies (FE)**: Vue Router, Pinia, PrimeVue, PrimeIcons  
+**Storage**: PostgreSQL  
+**Testing (BE)**: JUnit 5 / Spring Boot Test (unit + integration)  
+**Testing (FE)**: [NEEDS CLARIFICATION — Vitest recommended]  
+**Project Type**: web-service (BE) + web-app (FE)  
+**Performance Goals**: [NEEDS CLARIFICATION]  
+**Constraints**: BigDecimal for all financial fields; formula fields read-only in FE; cross-month updates require user confirmation  
+**Scale/Scope**: [NEEDS CLARIFICATION]
 
 ## Constitution Check
 
@@ -68,20 +70,28 @@ tests/
 ├── integration/
 └── unit/
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+# [REMOVE IF UNUSED] Option 2: Web application — THIS PROJECT (BE/ + FE/ layout per constitution)
+BE/
+├── src/main/java/.../
+│   ├── controller/
+│   ├── service/
+│   ├── repository/
+│   ├── dto/
+│   ├── entity/
+│   ├── mapper/
+│   ├── validation/
+│   ├── exception/
+│   └── config/
+└── src/test/java/...
 
-frontend/
+FE/
 ├── src/
 │   ├── components/
-│   ├── pages/
+│   ├── views/
+│   ├── router/
+│   ├── stores/
 │   └── services/
-└── tests/
+└── [vite.config.ts, ...]
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
 api/
