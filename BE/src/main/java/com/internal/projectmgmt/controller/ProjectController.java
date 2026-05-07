@@ -3,6 +3,7 @@ package com.internal.projectmgmt.controller;
 import com.internal.projectmgmt.dto.ApiResponse;
 import com.internal.projectmgmt.dto.project.ProjectRequest;
 import com.internal.projectmgmt.dto.project.ProjectResponse;
+import com.internal.projectmgmt.exception.ShrinkWarningException;
 import com.internal.projectmgmt.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,16 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProjectResponse>> update(
+    public ResponseEntity<ApiResponse<?>> update(
             @PathVariable UUID id,
-            @Valid @RequestBody ProjectRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(projectService.update(id, request)));
+            @Valid @RequestBody ProjectRequest request,
+            @RequestParam(defaultValue = "false") boolean confirmShrink) {
+        try {
+            return ResponseEntity.ok(ApiResponse.success(projectService.update(id, request, confirmShrink)));
+        } catch (ShrinkWarningException ex) {
+            return ResponseEntity.ok(
+                    ApiResponse.of("MONTH_RANGE_SHRINK_WARNING", ex.getMessage(), ex.getPendingInactiveMonths()));
+        }
     }
 
     @DeleteMapping("/{id}")

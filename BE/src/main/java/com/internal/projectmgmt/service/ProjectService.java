@@ -6,6 +6,7 @@ import com.internal.projectmgmt.entity.Customer;
 import com.internal.projectmgmt.entity.Project;
 import com.internal.projectmgmt.entity.ProjectType;
 import com.internal.projectmgmt.exception.AppException;
+import com.internal.projectmgmt.exception.ShrinkWarningException;
 import com.internal.projectmgmt.mapper.ProjectMapper;
 import com.internal.projectmgmt.repository.CustomerRepository;
 import com.internal.projectmgmt.repository.ProjectRepository;
@@ -25,6 +26,7 @@ public class ProjectService {
     private final CustomerRepository customerRepository;
     private final ProjectTypeRepository projectTypeRepository;
     private final ProjectMapper projectMapper;
+    private final ProjectMonthRecordService projectMonthRecordService;
 
     @Transactional(readOnly = true)
     public List<ProjectResponse> findAll() {
@@ -53,11 +55,13 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException("PROJECT_TYPE_NOT_FOUND", "Loại dự án không tồn tại"));
 
         Project project = projectMapper.toEntity(request, customer, projectType);
-        return projectMapper.toResponse(projectRepository.save(project));
+        Project saved = projectRepository.save(project);
+        projectMonthRecordService.generateRecordsForProject(saved);
+        return projectMapper.toResponse(saved);
     }
 
     @Transactional
-    public ProjectResponse update(UUID id, ProjectRequest request) {
+    public ProjectResponse update(UUID id, ProjectRequest request, boolean confirmShrink) {
         Project project = projectRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new AppException("PROJECT_NOT_FOUND", "Dự án không tồn tại"));
 
@@ -65,6 +69,21 @@ public class ProjectService {
             throw new AppException("PROJECT_CODE_DUPLICATE", "Mã dự án đã tồn tại");
         }
         validateMonthRange(request.monthStart(), request.monthEnd());
+
+        // Detect month range change
+        boolean rangeChanged = !project.getMonthStart().equals(request.monthStart())
+                || !project.getMonthEnd().equals(request.monthEnd());
+
+        if (rangeChanged) {
+            List<String> shrinkMonths = projectMonthRecordService
+                    .computeShrinkMonthKeys(id, request.monthStart(), request.monthEnd());
+            if (!shrinkMonths.isEmpty()) {
+                if (!confirmShrink) {
+                    throw new ShrinkWarningException(shrinkMonths);
+                }
+                projectMonthRecordService.markInactiveForShrink(id, shrinkMonths);
+            }
+        }
 
         Customer customer = customerRepository.findByIdAndDeletedFalse(request.customerId())
                 .orElseThrow(() -> new AppException("CUSTOMER_NOT_FOUND", "Khách hàng không tồn tại"));
@@ -81,7 +100,14 @@ public class ProjectService {
         project.setMonthStart(request.monthStart());
         project.setMonthEnd(request.monthEnd());
 
-        return projectMapper.toResponse(projectRepository.save(project));
+        Project saved = projectRepository.save(project);
+
+        // Generate new records if range expanded
+        if (rangeChanged) {
+            projectMonthRecordService.generateRecordsForProject(saved);
+        }
+
+        return projectMapper.toResponse(saved);
     }
 
     @Transactional

@@ -17,8 +17,8 @@ export const projectService = {
     return api.post(BASE, request).then((r) => r.data)
   },
 
-  update(id: string, request: ProjectRequest): Promise<ApiResponse<ProjectResponse>> {
-    return api.put(`${BASE}/${id}`, request).then((r) => r.data)
+  update(id: string, request: ProjectRequest, confirmShrink = false): Promise<ApiResponse<ProjectResponse>> {
+    return api.put(`${BASE}/${id}?confirmShrink=${confirmShrink}`, request).then((r) => r.data)
   },
 
   softDelete(id: string): Promise<ApiResponse<void>> {

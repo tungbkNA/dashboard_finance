@@ -1,5 +1,6 @@
 <template>
   <Toast />
+  <ConfirmDialog />
   <LoadingState v-if="isCheckingHealth" text="Đang kết nối..." />
   <AppLayout v-else />
 </template>
@@ -7,6 +8,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import Toast from 'primevue/toast'
+import ConfirmDialog from 'primevue/confirmdialog'
 import AppLayout from './components/AppLayout.vue'
 import LoadingState from './components/common/LoadingState.vue'
 import { checkHealth } from './services/healthService'

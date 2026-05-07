@@ -36,6 +36,8 @@ class ProjectServiceTest {
     private ProjectTypeRepository projectTypeRepository;
     @Mock
     private ProjectMapper projectMapper;
+    @Mock
+    private ProjectMonthRecordService projectMonthRecordService;
 
     @InjectMocks
     private ProjectService projectService;

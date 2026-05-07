@@ -52,7 +52,7 @@
     <!-- Create/Edit Dialog -->
     <Dialog v-model:visible="dialogVisible" :header="editingProject ? 'Sửa dự án' : 'Tạo dự án'"
             modal :style="{ width: '580px' }" :draggable="false">
-      <form @submit.prevent="saveProject" class="flex flex-col gap-3 pt-2">
+      <form @submit.prevent="() => saveProject()" class="flex flex-col gap-3 pt-2">
 
         <div class="field">
           <label class="block mb-1 font-medium">Mã dự án <span class="text-red-500">*</span></label>
@@ -293,12 +293,24 @@ function validateForm(): boolean {
   return Object.keys(errors).length === 0
 }
 
-async function saveProject() {
+async function saveProject(confirmShrink = false) {
   if (!validateForm()) return
   saving.value = true
   try {
     if (editingProject.value) {
-      await projectService.update(editingProject.value.id, form.value)
+      const res = await projectService.update(editingProject.value.id, form.value, confirmShrink)
+      if (res.code === 'MONTH_RANGE_SHRINK_WARNING') {
+        const months: string[] = (res.data as unknown as string[]) ?? []
+        confirm.require({
+          message: `Phạm vi tháng thu hẹp sẽ đánh dấu inactive ${months.length} bản ghi tháng (${months.join(', ')}). Dữ liệu không bị xóa. Xác nhận?`,
+          header: 'Xác nhận thu hẹp tháng',
+          icon: 'pi pi-exclamation-triangle',
+          rejectProps: { label: 'Hủy', severity: 'secondary', outlined: true },
+          acceptProps: { label: 'Xác nhận', severity: 'warning' },
+          accept: () => saveProject(true)
+        })
+        return
+      }
       toast.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dự án', life: 3000 })
     } else {
       await projectService.create(form.value)
