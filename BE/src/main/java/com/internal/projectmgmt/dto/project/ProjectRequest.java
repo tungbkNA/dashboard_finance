@@ -26,5 +26,7 @@ public record ProjectRequest(
 
         @NotBlank(message = "Tháng bắt đầu không được để trống") @MonthYear String monthStart,
 
-        @NotBlank(message = "Tháng kết thúc không được để trống") @MonthYear String monthEnd) {
+        @NotBlank(message = "Tháng kết thúc không được để trống") @MonthYear String monthEnd,
+
+        UUID representUserId) {
 }

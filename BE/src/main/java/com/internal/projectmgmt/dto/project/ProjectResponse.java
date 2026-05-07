@@ -20,6 +20,8 @@ public record ProjectResponse(
         StatusProject statusProject,
         String monthStart,
         String monthEnd,
+        UUID representUserId,
+        String representUserName,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt) {
 }

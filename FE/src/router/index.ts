@@ -3,31 +3,70 @@ import DashboardView from '@/views/DashboardView.vue'
 import ProjectSettingsView from '@/views/ProjectSettingsView.vue'
 import ProjectManagementView from '@/views/ProjectManagementView.vue'
 import ConfigView from '@/views/ConfigView.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/auth/LoginView.vue'),
+      meta: { layout: 'auth' }
+    },
+    {
       path: '/',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/project-settings',
       name: 'project-settings',
-      component: ProjectSettingsView
+      component: ProjectSettingsView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/projects',
       name: 'projects',
-      component: ProjectManagementView
+      component: ProjectManagementView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/config',
       name: 'config',
-      component: ConfigView
+      component: ConfigView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/roles',
+      name: 'admin-roles',
+      component: () => import('@/views/admin/roles/RoleListView.vue'),
+      meta: { requiresAuth: true, permission: 'MANAGE_ROLE' }
+    },
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: () => import('@/views/admin/users/UserListView.vue'),
+      meta: { requiresAuth: true, permission: 'MANAGE_USER' }
     }
   ]
+})
+
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
+
+  if (to.name === 'login' && auth.isAuthenticated) {
+    return { name: 'dashboard' }
+  }
+
+  if (to.meta.permission && !auth.hasPermission(to.meta.permission as string)) {
+    return { name: 'dashboard' }
+  }
 })
 
 export default router

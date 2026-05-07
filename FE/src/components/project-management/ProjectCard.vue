@@ -57,7 +57,7 @@
                   <span
                     v-if="isCascadedField(group.groupId, field) && detail && !detail.isFirstMonth && !isFormulaField(group.groupId, field)"
                     class="text-xs text-blue-500 whitespace-nowrap"
-                  >(Từ tháng trước)</span>
+                  ></span>
                   <span class="text-sm text-gray-600 text-right" style="white-space: nowrap;">{{ fieldLabel(field) }}</span>
                 </div>
 

@@ -9,16 +9,32 @@ const api = axios.create({
   }
 })
 
-// Request interceptor placeholder
+// Request interceptor — inject Authorization header from authStore
 api.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
   (error) => Promise.reject(error)
 )
 
-// Response interceptor — global error toast (T032)
+// Response interceptor — global error toast + 401 redirect
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      const currentPath = window.location.pathname
+      if (currentPath !== '/login') {
+        window.location.href = '/login?expired=1'
+      }
+      return Promise.reject(error)
+    }
+
     const toast = useToast()
     const message: string =
       error.response?.data?.message ?? 'Không thể kết nối đến máy chủ'

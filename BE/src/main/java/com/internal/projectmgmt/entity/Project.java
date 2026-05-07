@@ -27,8 +27,9 @@ public class Project {
     @Column(name = "project_name", nullable = false, length = 255)
     private String projectName;
 
-    @Column(name = "represent_id")
-    private UUID representId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "represent_id")
+    private AppUser representUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)

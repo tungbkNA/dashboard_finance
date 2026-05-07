@@ -2,6 +2,7 @@ package com.internal.projectmgmt.mapper;
 
 import com.internal.projectmgmt.dto.project.ProjectRequest;
 import com.internal.projectmgmt.dto.project.ProjectResponse;
+import com.internal.projectmgmt.entity.AppUser;
 import com.internal.projectmgmt.entity.Customer;
 import com.internal.projectmgmt.entity.Project;
 import com.internal.projectmgmt.entity.ProjectType;
@@ -25,6 +26,7 @@ public class ProjectMapper {
     }
 
     public ProjectResponse toResponse(Project project) {
+        AppUser rep = project.getRepresentUser();
         return new ProjectResponse(
                 project.getId(),
                 project.getProjectCode(),
@@ -38,6 +40,8 @@ public class ProjectMapper {
                 project.getStatusProject(),
                 project.getMonthStart(),
                 project.getMonthEnd(),
+                rep != null ? rep.getId() : null,
+                rep != null ? rep.getDisplayName() : null,
                 project.getCreatedAt(),
                 project.getUpdatedAt());
     }

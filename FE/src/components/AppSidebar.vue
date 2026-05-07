@@ -5,27 +5,39 @@
       <span class="sidebar-title">Dashboard Finance</span>
     </div>
     <nav class="sidebar-nav">
-      <RouterLink
-        v-for="item in menuItems"
-        :key="item.route"
-        :to="item.route"
-        class="sidebar-item"
-        active-class="sidebar-item--active"
-      >
-        <span :class="['pi', item.icon, 'sidebar-item-icon']" />
-        <span class="sidebar-item-label">{{ item.label }}</span>
-      </RouterLink>
+      <template v-for="item in visibleMenuItems" :key="item.route">
+        <RouterLink
+          :to="item.route"
+          class="sidebar-item"
+          :class="{ 'sidebar-item--sub': item.sub }"
+          active-class="sidebar-item--active"
+        >
+          <span :class="['pi', item.icon, 'sidebar-item-icon']" />
+          <span class="sidebar-item-label">{{ item.label }}</span>
+        </RouterLink>
+      </template>
     </nav>
   </div>
 </template>
 
 <script setup lang="ts">
-const menuItems = [
-  { label: 'Dashboard',              icon: 'pi-home',      route: '/' },
-  { label: 'Cài đặt dự án',         icon: 'pi-folder',    route: '/project-settings' },
-  { label: 'Quản Lý Các Dự Án',     icon: 'pi-briefcase', route: '/projects' },
-  { label: 'Cấu hình',              icon: 'pi-cog',       route: '/config' }
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
+
+const allMenuItems = [
+  { label: 'Dashboard',           icon: 'pi-home',      route: '/',                permission: null,          sub: false },
+  { label: 'Cài đặt dự án',      icon: 'pi-folder',    route: '/project-settings',permission: null,          sub: false },
+  { label: 'Quản Lý Các Dự Án',  icon: 'pi-briefcase', route: '/projects',        permission: null,          sub: false },
+  { label: 'Cấu hình',           icon: 'pi-cog',       route: '/config',          permission: null,          sub: false },
+  { label: 'Quản lý Phân quyền', icon: 'pi-shield',    route: '/admin/roles',     permission: 'MANAGE_ROLE', sub: true  },
+  { label: 'Quản lý Người dùng', icon: 'pi-users',     route: '/admin/users',     permission: 'MANAGE_USER', sub: true  },
 ]
+
+const visibleMenuItems = computed(() =>
+  allMenuItems.filter(item => !item.permission || authStore.hasPermission(item.permission))
+)
 </script>
 
 <style scoped>
@@ -76,6 +88,16 @@ const menuItems = [
 .sidebar-item--active {
   background: var(--p-primary-600, #dc2626);
   color: #fff;
+}
+
+.sidebar-item--sub {
+  padding-left: 2.25rem;
+  font-size: 0.92rem;
+  color: var(--p-surface-300, #d1d5db);
+}
+
+.sidebar-item--sub:hover {
+  background: var(--p-surface-700, #374151);
 }
 
 .sidebar-item-icon {

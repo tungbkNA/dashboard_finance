@@ -11,6 +11,7 @@ import com.internal.projectmgmt.mapper.ProjectMapper;
 import com.internal.projectmgmt.repository.CustomerRepository;
 import com.internal.projectmgmt.repository.ProjectRepository;
 import com.internal.projectmgmt.repository.ProjectTypeRepository;
+import com.internal.projectmgmt.repository.AppUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,6 +36,8 @@ class ProjectServiceTest {
     @Mock
     private ProjectTypeRepository projectTypeRepository;
     @Mock
+    private AppUserRepository appUserRepository;
+    @Mock
     private ProjectMapper projectMapper;
     @Mock
     private ProjectMonthRecordService projectMonthRecordService;
@@ -52,7 +55,8 @@ class ProjectServiceTest {
                 StatusContract.NO_CONTRACT,
                 StatusProject.OPEN,
                 monthStart,
-                monthEnd);
+                monthEnd,
+                null);
     }
 
     // T012 — duplicate projectCode throws AppException

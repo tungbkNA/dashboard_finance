@@ -2,12 +2,14 @@ package com.internal.projectmgmt.service;
 
 import com.internal.projectmgmt.dto.project.ProjectRequest;
 import com.internal.projectmgmt.dto.project.ProjectResponse;
+import com.internal.projectmgmt.entity.AppUser;
 import com.internal.projectmgmt.entity.Customer;
 import com.internal.projectmgmt.entity.Project;
 import com.internal.projectmgmt.entity.ProjectType;
 import com.internal.projectmgmt.exception.AppException;
 import com.internal.projectmgmt.exception.ShrinkWarningException;
 import com.internal.projectmgmt.mapper.ProjectMapper;
+import com.internal.projectmgmt.repository.AppUserRepository;
 import com.internal.projectmgmt.repository.CustomerRepository;
 import com.internal.projectmgmt.repository.ProjectRepository;
 import com.internal.projectmgmt.repository.ProjectTypeRepository;
@@ -25,6 +27,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final CustomerRepository customerRepository;
     private final ProjectTypeRepository projectTypeRepository;
+    private final AppUserRepository appUserRepository;
     private final ProjectMapper projectMapper;
     private final ProjectMonthRecordService projectMonthRecordService;
 
@@ -53,8 +56,10 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException("CUSTOMER_NOT_FOUND", "Khách hàng không tồn tại"));
         ProjectType projectType = projectTypeRepository.findByIdAndDeletedFalse(request.projectTypeId())
                 .orElseThrow(() -> new AppException("PROJECT_TYPE_NOT_FOUND", "Loại dự án không tồn tại"));
+        AppUser representUser = resolveRepresentUser(request);
 
         Project project = projectMapper.toEntity(request, customer, projectType);
+        project.setRepresentUser(representUser);
         Project saved = projectRepository.save(project);
         projectMonthRecordService.generateRecordsForProject(saved);
         return projectMapper.toResponse(saved);
@@ -89,11 +94,13 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException("CUSTOMER_NOT_FOUND", "Khách hàng không tồn tại"));
         ProjectType projectType = projectTypeRepository.findByIdAndDeletedFalse(request.projectTypeId())
                 .orElseThrow(() -> new AppException("PROJECT_TYPE_NOT_FOUND", "Loại dự án không tồn tại"));
+        AppUser representUser = resolveRepresentUser(request);
 
         project.setProjectCode(request.projectCode());
         project.setProjectName(request.projectName());
         project.setCustomer(customer);
         project.setProjectType(projectType);
+        project.setRepresentUser(representUser);
         project.setPrice(request.price());
         project.setStatusContract(request.statusContract());
         project.setStatusProject(request.statusProject());
@@ -119,6 +126,15 @@ public class ProjectService {
     }
 
     // ---- helpers ----
+
+    private AppUser resolveRepresentUser(ProjectRequest request) {
+        if (request.representUserId() == null)
+            return null;
+        return appUserRepository.findById(request.representUserId())
+                .filter(u -> !u.isDeleted() && u.isActive())
+                .orElseThrow(() -> new AppException("USER_NOT_FOUND",
+                        "Người đại diện không tồn tại hoặc không còn hoạt động"));
+    }
 
     /**
      * Compares month strings in format mm/yyyy by converting to yyyymm integer.

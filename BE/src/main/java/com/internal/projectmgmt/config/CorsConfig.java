@@ -9,9 +9,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Covers all feature routes including feature-002:
-        // /api/binance/projects, /api/binance/project-types, /api/binance/customers
-        registry.addMapping("/api/binance/**")
+        registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

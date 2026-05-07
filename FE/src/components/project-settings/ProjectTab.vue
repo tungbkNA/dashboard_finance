@@ -51,80 +51,114 @@
 
     <!-- Create/Edit Dialog -->
     <Dialog v-model:visible="dialogVisible" :header="editingProject ? 'Sửa dự án' : 'Tạo dự án'"
-            modal :style="{ width: '580px' }" :draggable="false">
-      <form @submit.prevent="() => saveProject()" class="flex flex-col gap-3 pt-2">
+            modal :style="{ width: '620px' }" :draggable="false">
+      <form @submit.prevent="() => saveProject()" class="dialog-form pt-2">
 
-        <div class="field">
-          <label class="block mb-1 font-medium">Mã dự án <span class="text-red-500">*</span></label>
-          <InputText v-model="form.projectCode" class="w-full"
-                     placeholder="VD: PRJ-001"
-                     :class="{ 'p-invalid': formErrors.projectCode }" />
-          <small class="p-error">{{ formErrors.projectCode }}</small>
+        <div class="form-row">
+          <label>Mã dự án <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <InputText v-model="form.projectCode" class="w-full"
+                       placeholder="VD: PRJ-001"
+                       :class="{ 'p-invalid': formErrors.projectCode }" />
+            <small class="p-error">{{ formErrors.projectCode }}</small>
+          </div>
         </div>
 
-        <div class="field">
-          <label class="block mb-1 font-medium">Tên dự án <span class="text-red-500">*</span></label>
-          <InputText v-model="form.projectName" class="w-full"
-                     :class="{ 'p-invalid': formErrors.projectName }" />
-          <small class="p-error">{{ formErrors.projectName }}</small>
+        <div class="form-row">
+          <label>Tên dự án <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <InputText v-model="form.projectName" class="w-full"
+                       placeholder="Nhập tên dự án"
+                       :class="{ 'p-invalid': formErrors.projectName }" />
+            <small class="p-error">{{ formErrors.projectName }}</small>
+          </div>
         </div>
 
-        <div class="field">
-          <label class="block mb-1 font-medium">Khách hàng <span class="text-red-500">*</span></label>
-          <Dropdown v-model="form.customerId" :options="customers"
-                    optionLabel="customerName" optionValue="id"
-                    placeholder="Chọn khách hàng" class="w-full"
-                    :loading="loadingDropdowns"
-                    :class="{ 'p-invalid': formErrors.customerId }" />
-          <small class="p-error">{{ formErrors.customerId }}</small>
+        <div class="form-row">
+          <label>Khách hàng <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <Dropdown v-model="form.customerId" :options="customers"
+                      optionLabel="customerName" optionValue="id"
+                      placeholder="Chọn khách hàng" class="w-full"
+                      :loading="loadingDropdowns"
+                      :class="{ 'p-invalid': formErrors.customerId }" />
+            <small class="p-error">{{ formErrors.customerId }}</small>
+          </div>
         </div>
 
-        <div class="field">
-          <label class="block mb-1 font-medium">Loại dự án <span class="text-red-500">*</span></label>
-          <Dropdown v-model="form.projectTypeId" :options="projectTypes"
-                    optionLabel="value" optionValue="id"
-                    placeholder="Chọn loại dự án" class="w-full"
-                    :loading="loadingDropdowns"
-                    :class="{ 'p-invalid': formErrors.projectTypeId }" />
-          <small class="p-error">{{ formErrors.projectTypeId }}</small>
+        <div class="form-row">
+          <label>Loại dự án <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <Dropdown v-model="form.projectTypeId" :options="projectTypes"
+                      optionLabel="value" optionValue="id"
+                      placeholder="Chọn loại dự án" class="w-full"
+                      :loading="loadingDropdowns"
+                      :class="{ 'p-invalid': formErrors.projectTypeId }" />
+            <small class="p-error">{{ formErrors.projectTypeId }}</small>
+          </div>
         </div>
 
-        <div class="field">
-          <label class="block mb-1 font-medium">Đơn giá <span class="text-red-500">*</span></label>
-          <InputNumber v-model="form.price" :min="0" :minFractionDigits="0" :maxFractionDigits="4"
-                       class="w-full" :class="{ 'p-invalid': formErrors.price }" />
-          <small class="p-error">{{ formErrors.price }}</small>
+        <div class="form-row">
+          <label>Đơn giá <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <InputNumber v-model="form.price" :min="0" :minFractionDigits="0" :maxFractionDigits="4"
+                         class="w-full" placeholder="0" :class="{ 'p-invalid': formErrors.price }" />
+            <small class="p-error">{{ formErrors.price }}</small>
+          </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div class="field">
-            <label class="block mb-1 font-medium">Trạng thái HĐ <span class="text-red-500">*</span></label>
+        <div class="form-row">
+          <label>Trạng thái HĐ <span class="text-red-500">*</span></label>
+          <div class="form-input">
             <Dropdown v-model="form.statusContract" :options="statusContractOptions"
                       optionLabel="label" optionValue="value"
+                      placeholder="Chọn trạng thái HĐ"
                       class="w-full" :class="{ 'p-invalid': formErrors.statusContract }" />
             <small class="p-error">{{ formErrors.statusContract }}</small>
           </div>
-          <div class="field">
-            <label class="block mb-1 font-medium">Trạng thái DA <span class="text-red-500">*</span></label>
+        </div>
+
+        <div class="form-row">
+          <label>Trạng thái DA <span class="text-red-500">*</span></label>
+          <div class="form-input">
             <Dropdown v-model="form.statusProject" :options="statusProjectOptions"
                       optionLabel="label" optionValue="value"
+                      placeholder="Chọn trạng thái DA"
                       class="w-full" :class="{ 'p-invalid': formErrors.statusProject }" />
             <small class="p-error">{{ formErrors.statusProject }}</small>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div class="field">
-            <label class="block mb-1 font-medium">Tháng bắt đầu <span class="text-red-500">*</span></label>
+        <div class="form-row">
+          <label>Tháng bắt đầu <span class="text-red-500">*</span></label>
+          <div class="form-input">
             <InputText v-model="form.monthStart" class="w-full" placeholder="mm/yyyy"
                        :class="{ 'p-invalid': formErrors.monthStart }" />
             <small class="p-error">{{ formErrors.monthStart }}</small>
           </div>
-          <div class="field">
-            <label class="block mb-1 font-medium">Tháng kết thúc <span class="text-red-500">*</span></label>
+        </div>
+
+        <div class="form-row">
+          <label>Tháng kết thúc <span class="text-red-500">*</span></label>
+          <div class="form-input">
             <InputText v-model="form.monthEnd" class="w-full" placeholder="mm/yyyy"
                        :class="{ 'p-invalid': formErrors.monthEnd }" />
             <small class="p-error">{{ formErrors.monthEnd }}</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Người đại diện</label>
+          <div class="form-input">
+            <Dropdown
+              v-model="form.representUserId"
+              :options="activeUsers"
+              optionLabel="displayName"
+              optionValue="id"
+              placeholder="-- Không chọn --"
+              :showClear="true"
+              class="w-full"
+            />
           </div>
         </div>
 
@@ -158,6 +192,8 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import { projectService } from '@/services/projectService'
 import { projectTypeService } from '@/services/projectTypeService'
 import { customerService } from '@/services/customerService'
+import { userService } from '@/services/userService'
+import type { AppUser } from '@/types/user'
 import type { ProjectResponse, ProjectRequest, ProjectTypeResponse, CustomerResponse, StatusContract, StatusProject } from '@/types/project-settings'
 
 const toast = useToast()
@@ -166,6 +202,7 @@ const confirm = useConfirm()
 const projects = ref<ProjectResponse[]>([])
 const projectTypes = ref<ProjectTypeResponse[]>([])
 const customers = ref<CustomerResponse[]>([])
+const activeUsers = ref<AppUser[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const saving = ref(false)
@@ -182,7 +219,8 @@ const emptyForm = (): ProjectRequest => ({
   statusContract: 'NO_CONTRACT',
   statusProject: 'OPEN',
   monthStart: '',
-  monthEnd: ''
+  monthEnd: '',
+  representUserId: null
 })
 
 const form = ref<ProjectRequest>(emptyForm())
@@ -240,12 +278,14 @@ async function openCreate() {
   dialogVisible.value = true
   loadingDropdowns.value = true
   try {
-    const [ptRes, cRes] = await Promise.all([
+    const [ptRes, cRes, uRes] = await Promise.all([
       projectTypeService.getAll(),
-      customerService.getAll()
+      customerService.getAll(),
+      userService.listUsers(true)
     ])
     projectTypes.value = ptRes.data ?? []
     customers.value = cRes.data ?? []
+    activeUsers.value = uRes
   } finally {
     loadingDropdowns.value = false
   }
@@ -262,10 +302,12 @@ function openEdit(project: ProjectResponse) {
     statusContract: project.statusContract,
     statusProject: project.statusProject,
     monthStart: project.monthStart,
-    monthEnd: project.monthEnd
+    monthEnd: project.monthEnd,
+    representUserId: project.representUserId ?? null
   }
   formErrors.value = {}
   dialogVisible.value = true
+  userService.listUsers(true).then(users => { activeUsers.value = users }).catch(() => {})
 }
 
 function validateForm(): boolean {
@@ -340,3 +382,30 @@ function confirmDelete(project: ProjectResponse) {
 
 onMounted(loadData)
 </script>
+
+<style scoped>
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.form-row > label {
+  width: 120px;
+  min-width: 120px;
+  padding-top: 0.55rem;
+  font-weight: 500;
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  flex: 1;
+}
+</style>

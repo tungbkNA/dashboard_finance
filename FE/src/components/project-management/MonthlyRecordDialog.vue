@@ -12,290 +12,381 @@
     <Message v-else-if="loadError" severity="error" :closable="false">{{ loadError }}</Message>
 
     <template v-else-if="record">
-      <form @submit.prevent="handleSubmit" class="flex flex-col gap-4 pt-2">
+      <form @submit.prevent="handleSubmit" class="dialog-form pt-2">
 
         <!-- G1 — Tồn đầu kỳ -->
         <Fieldset legend="G1 — Tồn đầu kỳ" :toggleable="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Ra Tồn</label>
-              <InputNumber v-model="form.g1RaTon" class="w-full"
-                           :disabled="!record.isFirstMonth"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
-              <small v-if="!record.isFirstMonth" class="text-gray-400">Tự động từ Tồn cuối kỳ tháng trước</small>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Ra Tồn</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1RaTon" class="w-full"
+                             :disabled="!record.isFirstMonth"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" placeholder="Tự động" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tồn TXSX Ht HĐ</label>
-              <InputNumber v-model="form.g1SlsxTonTuSxHtHd" class="w-full"
-                           :disabled="!record.isFirstMonth"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
-              <small v-if="!record.isFirstMonth" class="text-gray-400">Tự động từ Tồn cuối kỳ tháng trước</small>
+            <div class="form-row">
+              <label>SLSX Tồn TXSX Ht HĐ</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1SlsxTonTuSxHtHd" class="w-full"
+                             :disabled="!record.isFirstMonth"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" placeholder="Tự động" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tồn TXSX Dở dang HĐ</label>
-              <InputNumber v-model="form.g1SlsxTonTuSxDdHd" class="w-full"
-                           :disabled="!record.isFirstMonth"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
-              <small v-if="!record.isFirstMonth" class="text-gray-400">Tự động từ Tồn cuối kỳ tháng trước</small>
+            <div class="form-row">
+              <label>SLSX Tồn TXSX Dở dang HĐ</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1SlsxTonTuSxDdHd" class="w-full"
+                             :disabled="!record.isFirstMonth"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" placeholder="Tự động" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tồn TXSX HĐ</label>
-              <InputNumber v-model="form.g1SlsxTonTuSxHd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX Tồn TXSX HĐ</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1SlsxTonTuSxHd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS Tồn</label>
-              <InputNumber v-model="form.g1SlsxOsTon" class="w-full"
-                           :disabled="!record.isFirstMonth"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
-              <small v-if="!record.isFirstMonth" class="text-gray-400">Tự động từ Tồn cuối kỳ tháng trước</small>
+            <div class="form-row">
+              <label>SLSX OS Tồn</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1SlsxOsTon" class="w-full"
+                             :disabled="!record.isFirstMonth"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" placeholder="Tự động" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS Tồn Ht</label>
-              <InputNumber v-model="form.g1SlsxOsTonHt" class="w-full"
-                           :disabled="!record.isFirstMonth"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
-              <small v-if="!record.isFirstMonth" class="text-gray-400">Tự động từ Tồn cuối kỳ tháng trước</small>
+            <div class="form-row">
+              <label>SLSX OS Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g1SlsxOsTonHt" class="w-full"
+                             :disabled="!record.isFirstMonth"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" placeholder="Tự động" />
+              </div>
             </div>
           </div>
         </Fieldset>
 
         <!-- G2 — Kế hoạch SLSX -->
         <Fieldset legend="G2 — Kế hoạch tháng" :toggleable="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Headcount</label>
-              <InputNumber v-model="form.g2Headcount" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Headcount</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2Headcount" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Ra</label>
-              <InputNumber v-model="form.g2Ra" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Ra</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2Ra" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tự SX</label>
-              <InputNumber v-model="form.g2SlsxTuSx" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX Tự SX</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxTuSx" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS</label>
-              <InputNumber v-model="form.g2SlsxOs" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxOs" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Liên kết</label>
-              <InputNumber v-model="form.g2LienKet" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Liên kết</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2LienKet" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Tổng SLSX Dự kiến (CT)</label>
-              <InputNumber :model-value="record.g2TongSlsxDuKien" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">Tổng SLSX Dự kiến (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g2TongSlsxDuKien" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tự SX HT trong tháng</label>
-              <InputNumber v-model="form.g2SlsxTuSxHtTrongThang" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX Tự SX HT trong tháng</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxTuSxHtTrongThang" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX Tự SX DD</label>
-              <InputNumber v-model="form.g2SlsxTuSxDd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX Tự SX DD</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxTuSxDd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS HT</label>
-              <InputNumber v-model="form.g2SlsxOsHt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS HT</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxOsHt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS DD</label>
-              <InputNumber v-model="form.g2SlsxOsDd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS DD</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2SlsxOsDd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">CPBQTB</label>
-              <InputNumber v-model="form.g2Cpbqtb" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>CPBQTB</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2Cpbqtb" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Tỷ suất LNG</label>
-              <InputNumber v-model="form.g2TySuatLng" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Tỷ suất LNG</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g2TySuatLng" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
           </div>
         </Fieldset>
 
         <!-- G3 — Thực tế SX -->
         <Fieldset legend="G3 — Thực tế SX" :toggleable="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Ra</label>
-              <InputNumber v-model="form.g3Ra" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Ra</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3Ra" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Tổng SLSX HĐ</label>
-              <InputNumber v-model="form.g3TongSlsxHd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Tổng SLSX HĐ</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3TongSlsxHd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">EE % (CT)</label>
-              <InputNumber :model-value="record.g3Ee" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="2" suffix="%" />
+            <div class="form-row">
+              <label class="text-gray-500">EE % (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g3Ee" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="2" suffix="%" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX TXSX Ht</label>
-              <InputNumber v-model="form.g3SlsxTuSxHt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX TXSX Ht</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3SlsxTuSxHt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX TXSX DD</label>
-              <InputNumber v-model="form.g3SlsxTuSxDd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX TXSX DD</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3SlsxTuSxDd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS DD</label>
-              <InputNumber v-model="form.g3SlsxOsDd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS DD</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3SlsxOsDd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS Tồn Ht</label>
-              <InputNumber v-model="form.g3SlsxOsTonHt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g3SlsxOsTonHt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
           </div>
         </Fieldset>
 
         <!-- G4 — Xuất kho TP -->
         <Fieldset legend="G4 — Xuất kho TP" :toggleable="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Từ SLSX Tồn Ht</label>
-              <InputNumber v-model="form.g4TuSlsxTonHt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Từ SLSX Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4TuSlsxTonHt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Từ SLSX trong tháng</label>
-              <InputNumber v-model="form.g4TuSlsxTrongThang" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Từ SLSX trong tháng</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4TuSlsxTrongThang" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS Tồn</label>
-              <InputNumber v-model="form.g4SlsxOsTon" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS Tồn</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4SlsxOsTon" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">SLSX OS trong tháng</label>
-              <InputNumber v-model="form.g4SlsxOsTrongThang" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>SLSX OS trong tháng</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4SlsxOsTrongThang" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Liên kết</label>
-              <InputNumber v-model="form.g4Lk" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Liên kết</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4Lk" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Tổng (CT)</label>
-              <InputNumber :model-value="record.g4Tong" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">Tổng (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g4Tong" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Tỉ suất LNG dự kiến (%)</label>
-              <InputNumber v-model="form.g4TiSuatLngDuKien" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" suffix="%" />
+            <div class="form-row">
+              <label>Tỉ suất LNG dự kiến (%)</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4TiSuatLngDuKien" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" suffix="%" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">LNG dự kiến</label>
-              <InputNumber v-model="form.g4LngDuKien" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+            <div class="form-row">
+              <label>LNG dự kiến</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g4LngDuKien" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Doanh thu (CT)</label>
-              <InputNumber :model-value="record.g4DoanhThu" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+            <div class="form-row">
+              <label class="text-gray-500">Doanh thu (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g4DoanhThu" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+              </div>
             </div>
           </div>
         </Fieldset>
 
         <!-- G5 — Xuất nhập TP -->
         <Fieldset legend="G5 — Xuất nhập TP" :toggleable="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">NT SLSX Tồn Ht</label>
-              <InputNumber v-model="form.g5NtSlsxTonHt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+          <div class="form-grid">
+            <div class="form-row">
+              <label>NT SLSX Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5NtSlsxTonHt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">NT SLSX trong tháng</label>
-              <InputNumber v-model="form.g5NtSlsxTrongThang" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>NT SLSX trong tháng</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5NtSlsxTrongThang" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">NT SLSX OS Tồn</label>
-              <InputNumber v-model="form.g5NtSlsxOsTon" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>NT SLSX OS Tồn</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5NtSlsxOsTon" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">NT SLSX OS trong tháng</label>
-              <InputNumber v-model="form.g5NtSlsxOsTrongThang" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>NT SLSX OS trong tháng</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5NtSlsxOsTrongThang" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Tổng SLNT (CT)</label>
-              <InputNumber :model-value="record.g5TongSlnt" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">Tổng SLNT (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g5TongSlnt" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Ra tương ứng SLNT</label>
-              <InputNumber v-model="form.g5RaTuongUngSlnt" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label>Ra tương ứng SLNT</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5RaTuongUngSlnt" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">Tỉ suất LNG (%)</label>
-              <InputNumber v-model="form.g5TiSuatLng" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" suffix="%" />
+            <div class="form-row">
+              <label>Tỉ suất LNG (%)</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5TiSuatLng" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" suffix="%" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium">LNG (VNĐ)</label>
-              <InputNumber v-model="form.g5LngVnd" class="w-full"
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+            <div class="form-row">
+              <label>LNG (VNĐ)</label>
+              <div class="form-input">
+                <InputNumber v-model="form.g5LngVnd" class="w-full"
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Doanh thu (CT)</label>
-              <InputNumber :model-value="record.g5DoanhThu" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+            <div class="form-row">
+              <label class="text-gray-500">Doanh thu (CT)</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g5DoanhThu" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="0" />
+              </div>
             </div>
           </div>
         </Fieldset>
 
         <!-- G6 — Tồn cuối kỳ (computed) -->
         <Fieldset legend="G6 — Tồn cuối kỳ (tính toán)" :toggleable="true" :collapsed="true">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">Ra Tồn</label>
-              <InputNumber :model-value="record.g6RaTon" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+          <div class="form-grid">
+            <div class="form-row">
+              <label class="text-gray-500">Ra Tồn</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g6RaTon" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">SLSX Tồn Ht</label>
-              <InputNumber :model-value="record.g6SlsxTonHt" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">SLSX Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g6SlsxTonHt" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">SLSX Tồn DD</label>
-              <InputNumber :model-value="record.g6SlsxTonDd" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">SLSX Tồn DD</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g6SlsxTonDd" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">SLSX OS Tồn</label>
-              <InputNumber :model-value="record.g6SlsxOsTon" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">SLSX OS Tồn</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g6SlsxOsTon" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
-            <div class="field">
-              <label class="block mb-1 text-sm font-medium text-gray-500">SLSX OS Tồn Ht</label>
-              <InputNumber :model-value="record.g6SlsxOsTonHt" class="w-full" disabled
-                           :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+            <div class="form-row">
+              <label class="text-gray-500">SLSX OS Tồn Ht</label>
+              <div class="form-input">
+                <InputNumber :model-value="record.g6SlsxOsTonHt" class="w-full" disabled
+                             :use-grouping="false" mode="decimal" :max-fraction-digits="4" />
+              </div>
             </div>
           </div>
         </Fieldset>
@@ -460,3 +551,36 @@ function onHide() {
   loadError.value = null
 }
 </script>
+
+<style scoped>
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-row > label {
+  width: 180px;
+  min-width: 180px;
+  font-weight: 500;
+  text-align: right;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.form-input {
+  flex: 1;
+}
+</style>

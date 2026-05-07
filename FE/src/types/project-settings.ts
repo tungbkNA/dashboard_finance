@@ -44,6 +44,8 @@ export interface ProjectResponse {
   statusProject: StatusProject
   monthStart: string
   monthEnd: string
+  representUserId?: string
+  representUserName?: string
   createdAt: string
   updatedAt: string
 }
@@ -58,6 +60,7 @@ export interface ProjectRequest {
   statusProject: StatusProject
   monthStart: string
   monthEnd: string
+  representUserId?: string | null
 }
 
 // ---- Delete Check ----

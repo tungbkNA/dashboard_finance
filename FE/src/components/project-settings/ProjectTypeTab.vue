@@ -35,18 +35,22 @@
     <Dialog v-model:visible="dialogVisible"
             :header="editingItem ? 'Sửa loại dự án' : 'Thêm loại dự án'"
             modal :style="{ width: '420px' }" :draggable="false">
-      <form @submit.prevent="saveItem" class="flex flex-col gap-3 pt-2">
-        <div class="field">
-          <label class="block mb-1 font-medium">Key <span class="text-red-500">*</span></label>
-          <InputText v-model="form.key" class="w-full" placeholder="VD: DEVELOPMENT"
-                     :class="{ 'p-invalid': formErrors.key }" />
-          <small class="p-error">{{ formErrors.key }}</small>
+      <form @submit.prevent="saveItem" class="dialog-form pt-2">
+        <div class="form-row">
+          <label>Key <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <InputText v-model="form.key" class="w-full" placeholder="VD: DEVELOPMENT"
+                       :class="{ 'p-invalid': formErrors.key }" />
+            <small class="p-error">{{ formErrors.key }}</small>
+          </div>
         </div>
-        <div class="field">
-          <label class="block mb-1 font-medium">Value <span class="text-red-500">*</span></label>
-          <InputText v-model="form.value" class="w-full" placeholder="VD: Phát triển phần mềm"
-                     :class="{ 'p-invalid': formErrors.value }" />
-          <small class="p-error">{{ formErrors.value }}</small>
+        <div class="form-row">
+          <label>Value <span class="text-red-500">*</span></label>
+          <div class="form-input">
+            <InputText v-model="form.value" class="w-full" placeholder="VD: Phát triển phần mềm"
+                       :class="{ 'p-invalid': formErrors.value }" />
+            <small class="p-error">{{ formErrors.value }}</small>
+          </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <Button label="Hủy" severity="secondary" text @click="dialogVisible = false" type="button" />
@@ -187,3 +191,30 @@ async function confirmForceDelete() {
 
 onMounted(loadData)
 </script>
+
+<style scoped>
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.form-row > label {
+  width: 80px;
+  min-width: 80px;
+  padding-top: 0.55rem;
+  font-weight: 500;
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  flex: 1;
+}
+</style>

@@ -2,18 +2,26 @@
   <Toast />
   <ConfirmDialog />
   <LoadingState v-if="isCheckingHealth" text="Đang kết nối..." />
-  <AppLayout v-else />
+  <template v-else>
+    <RouterView v-if="isAuthLayout" />
+    <AppLayout v-else />
+  </template>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
 import AppLayout from './components/AppLayout.vue'
 import LoadingState from './components/common/LoadingState.vue'
 import { checkHealth } from './services/healthService'
 
+const route = useRoute()
 const isCheckingHealth = ref(true)
+
+// Routes with meta.layout = 'auth' render without sidebar/header
+const isAuthLayout = computed(() => route.meta.layout === 'auth')
 
 onMounted(async () => {
   try {
