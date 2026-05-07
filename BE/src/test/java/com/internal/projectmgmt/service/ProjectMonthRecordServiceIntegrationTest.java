@@ -1,5 +1,6 @@
 package com.internal.projectmgmt.service;
 
+import com.internal.projectmgmt.dto.monthlyrecord.CrossMonthPropagationResult;
 import com.internal.projectmgmt.entity.Project;
 import com.internal.projectmgmt.entity.ProjectMonthRecord;
 import com.internal.projectmgmt.mapper.ProjectMonthRecordMapper;
@@ -40,6 +41,8 @@ class ProjectMonthRecordServiceIntegrationTest {
     private ProjectMonthRecordMapper mapper;
     @Mock
     private MonthlyCalculationService calculationService;
+    @Mock
+    private CrossMonthPropagationService propagationService;
 
     @InjectMocks
     private ProjectMonthRecordService service;
@@ -148,38 +151,32 @@ class ProjectMonthRecordServiceIntegrationTest {
         verify(repo, times(2)).save(any(ProjectMonthRecord.class));
     }
 
-    // ---- (e) CASCADE: closing stock cascades to next month opening stock ----
+    // ---- (e) CASCADE: update() invokes propagation service when G6 changes ----
 
     @Test
-    @DisplayName("cascadeClosingToNextMonth: g6 fields are copied to g1 of next month")
+    @DisplayName("update: propagationService.propagateFrom is called when G6 changes")
     void cascade_copiesG6ToG1OfNextMonth() {
         ProjectMonthRecord current = ProjectMonthRecord.builder()
-                .project(project).monthKey("2026-01").active(true).build();
+                .project(project).monthKey("2026-01").active(true).locked(false).build();
         current.setG6RaTon(BigDecimal.valueOf(100));
-        current.setG6SlsxTonHt(BigDecimal.valueOf(200));
-        current.setG6SlsxTonDd(BigDecimal.valueOf(50));
-        current.setG6SlsxOsTon(BigDecimal.valueOf(30));
-        current.setG6SlsxOsTonHt(BigDecimal.valueOf(20));
 
-        ProjectMonthRecord next = ProjectMonthRecord.builder()
-                .project(project).monthKey("2026-02").active(true).build();
+        // G6 before = [0,0,0,0,0,0], G6 after = [100,...] → G6 changed
+        BigDecimal[] g6Before = new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        BigDecimal[] g6After = new BigDecimal[] { BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
 
-        // Stub findById for update() — needed to mock findById call
         when(repo.findById(any())).thenReturn(Optional.of(current));
-        when(repo.findByProjectIdAndMonthKey(any(), eq("2026-02"))).thenReturn(Optional.of(next));
         doNothing().when(mapper).applyRequest(any(), any());
-        when(mapper.toResponse(any(), anyBoolean())).thenReturn(null);
+        when(propagationService.snapshotG6(current)).thenReturn(g6Before, g6After);
+        when(propagationService.g6Unchanged(g6Before, g6After)).thenReturn(false);
+        when(propagationService.propagateFrom(eq(current), any()))
+                .thenReturn(CrossMonthPropagationResult.builder()
+                        .affectedMonthKeys(List.of("2026-02")).build());
+        when(mapper.toResponse(any(), anyBoolean(), anyInt())).thenReturn(null);
 
         service.update(current.getId(), null);
 
-        // Verify cascade fields were set on next month
-        assertThat(next.getG1RaTon()).isEqualByComparingTo(BigDecimal.valueOf(100));
-        assertThat(next.getG1SlsxTonTuSxHtHd()).isEqualByComparingTo(BigDecimal.valueOf(200));
-        assertThat(next.getG1SlsxTonTuSxDdHd()).isEqualByComparingTo(BigDecimal.valueOf(50));
-        assertThat(next.getG1SlsxOsTon()).isEqualByComparingTo(BigDecimal.valueOf(30));
-        assertThat(next.getG1SlsxOsTonHt()).isEqualByComparingTo(BigDecimal.valueOf(20));
-
-        // g1SlsxTonTuSxHd is NOT cascaded — should be null (untouched)
-        assertThat(next.getG1SlsxTonTuSxHd()).isNull();
+        verify(propagationService).propagateFrom(eq(current), any());
     }
 }

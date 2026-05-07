@@ -1,5 +1,6 @@
 package com.internal.projectmgmt.service;
 
+import com.internal.projectmgmt.dto.monthlyrecord.CrossMonthPropagationResult;
 import com.internal.projectmgmt.dto.monthlyrecord.FieldMetadataResponse;
 import com.internal.projectmgmt.dto.monthlyrecord.ProjectMonthRecordRequest;
 import com.internal.projectmgmt.dto.monthlyrecord.ProjectMonthRecordResponse;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ProjectMonthRecordService {
     private final ProjectMonthRecordRepository repo;
     private final ProjectMonthRecordMapper mapper;
     private final MonthlyCalculationService calculationService;
+    private final CrossMonthPropagationService propagationService;
 
     // ===================== US1: CRUD =====================
 
@@ -52,6 +55,13 @@ public class ProjectMonthRecordService {
             throw new AppException("MONTHLY_RECORD_INACTIVE", "Bản ghi tháng này không còn hoạt động (inactive)");
         }
 
+        if (record.isLocked()) {
+            throw new AppException("MONTHLY_RECORD_LOCKED", "Bản ghi tháng này đã bị khóa và không thể chỉnh sửa");
+        }
+
+        // Snapshot G6 before applying request
+        BigDecimal[] g6Before = propagationService.snapshotG6(record);
+
         // Apply manual fields from request
         mapper.applyRequest(request, record);
 
@@ -60,11 +70,18 @@ public class ProjectMonthRecordService {
 
         repo.save(record);
 
-        // Cascade closing stock to next month (US3 — T021)
-        cascadeClosingToNextMonth(record);
+        // Snapshot G6 after save and propagate if G6 changed
+        BigDecimal[] g6After = propagationService.snapshotG6(record);
+        String eventId = java.util.UUID.randomUUID().toString();
+        CrossMonthPropagationResult propagation;
+        if (propagationService.g6Unchanged(g6Before, g6After)) {
+            propagation = CrossMonthPropagationResult.builder().affectedMonthKeys(List.of()).build();
+        } else {
+            propagation = propagationService.propagateFrom(record, eventId);
+        }
 
         boolean isFirst = isFirstMonth(record);
-        return mapper.toResponse(record, isFirst);
+        return mapper.toResponse(record, isFirst, propagation.getAffectedMonthKeys().size());
     }
 
     // ===================== US2: Generate / Inactive =====================
@@ -121,22 +138,7 @@ public class ProjectMonthRecordService {
                 .toList();
     }
 
-    // ===================== US3: Cascade =====================
-
-    private void cascadeClosingToNextMonth(ProjectMonthRecord current) {
-        String nextMk = YearMonth.parse(current.getMonthKey()).plusMonths(1).toString();
-        repo.findByProjectIdAndMonthKey(current.getProject().getId(), nextMk).ifPresent(next -> {
-            next.setG1RaTon(current.getG6RaTon());
-            next.setG1SlsxTonTuSxHd(current.getG6SlsxTon());
-            next.setG1SlsxTonTuSxHtHd(current.getG6SlsxTonHt());
-            next.setG1SlsxTonTuSxDdHd(current.getG6SlsxTonDd());
-            next.setG1SlsxOsTon(current.getG6SlsxOsTon());
-            next.setG1SlsxOsTonHt(current.getG6SlsxOsTonHt());
-            // g1SlsxTonTuSxHd now cascades from g6SlsxTon
-            calculationService.calculateAndFill(next, next.getProject().getPrice());
-            repo.save(next);
-        });
-    }
+    // ===================== US4: Field Metadata (static) =====================
 
     private boolean isFirstMonth(ProjectMonthRecord record) {
         YearMonth projectStart = parseMonthYear(record.getProject().getMonthStart());
@@ -144,7 +146,7 @@ public class ProjectMonthRecordService {
         return recordMonth.equals(projectStart);
     }
 
-    // ===================== US4: Field Metadata (static) =====================
+    // ===================== US5: Field Metadata (static) =====================
 
     public FieldMetadataResponse getFieldMetadata() {
         return FieldMetadataResponse.builder()

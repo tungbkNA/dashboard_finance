@@ -94,7 +94,7 @@ class ProjectMonthRecordControllerFieldMetadataTest {
     }
 
     @Test
-    @DisplayName("GET /field-metadata g1 cascadedFromPrevMonthFields has 5 fields")
+    @DisplayName("GET /field-metadata g1 cascadedFromPrevMonthFields has 6 fields (includes g1SlsxTonTuSxHd)")
     void getFieldMetadata_g1_hasCascadedFields() {
         when(service.getFieldMetadata()).thenReturn(buildExpectedMetadata());
 
@@ -110,7 +110,7 @@ class ProjectMonthRecordControllerFieldMetadataTest {
 
     private FieldMetadataResponse buildExpectedMetadata() {
         // Instantiate the real service to get the authoritative hard-coded constant
-        ProjectMonthRecordService realService = new ProjectMonthRecordService(null, null, null);
+        ProjectMonthRecordService realService = new ProjectMonthRecordService(null, null, null, null);
         return realService.getFieldMetadata();
     }
 }

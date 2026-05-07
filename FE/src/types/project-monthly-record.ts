@@ -92,6 +92,9 @@ export interface ProjectMonthRecordDetail {
   g6SlsxOsTon: number | null
   g6SlsxOsTonHt: number | null
   g6SlsxTon: number | null
+
+  // Feature 005: cross-month propagation result
+  affectedMonths: number
 }
 
 // ---- Update request (manual fields only — aligned with BE ProjectMonthRecordRequest) ----

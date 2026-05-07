@@ -30,6 +30,10 @@ public class ProjectMonthRecordMapper {
     }
 
     public ProjectMonthRecordResponse toResponse(ProjectMonthRecord r, boolean isFirstMonth) {
+        return toResponse(r, isFirstMonth, 0);
+    }
+
+    public ProjectMonthRecordResponse toResponse(ProjectMonthRecord r, boolean isFirstMonth, int affectedMonths) {
         Project p = r.getProject();
         return ProjectMonthRecordResponse.builder()
                 .id(r.getId())
@@ -42,6 +46,7 @@ public class ProjectMonthRecordMapper {
                 .price(p.getPrice())
                 .createdAt(r.getCreatedAt())
                 .updatedAt(r.getUpdatedAt())
+                .affectedMonths(affectedMonths)
                 // Nhóm 1
                 .g1RaTon(r.getG1RaTon())
                 .g1SlsxTonTuSxHd(r.getG1SlsxTonTuSxHd())

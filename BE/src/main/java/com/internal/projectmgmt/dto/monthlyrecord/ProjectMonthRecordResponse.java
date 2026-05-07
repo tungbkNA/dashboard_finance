@@ -88,4 +88,8 @@ public class ProjectMonthRecordResponse {
     private BigDecimal g6SlsxOsTon;
     private BigDecimal g6SlsxOsTonHt;
     private BigDecimal g6SlsxTon; // formula: g6SlsxTonHt + g6SlsxTonDd + g6SlsxOsTon + g6SlsxOsTonHt
+
+    // Feature 005: cross-month propagation result
+    @Builder.Default
+    private int affectedMonths = 0;
 }

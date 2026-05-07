@@ -1,4 +1,5 @@
 <template>
+  <ConfirmDialog />
   <Dialog
     :visible="true"
     @update:visible="handleVisibilityChange"
@@ -109,6 +110,7 @@ import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import Message from 'primevue/message'
 import ProgressSpinner from 'primevue/progressspinner'
+import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { projectMonthlyRecordService } from '@/services/projectMonthlyRecordService'
@@ -409,6 +411,17 @@ function hasOverwrittenFields(groupId: string): boolean {
   return false
 }
 
+function hasExistingDataInGroup(groupId: string): boolean {
+  if (!detail.value) return false
+  const meta = groupMeta(groupId)
+  if (!meta) return false
+  for (const field of meta.manualFields) {
+    const val = detail.value[field as keyof ProjectMonthRecordDetail]
+    if (val !== null && val !== undefined) return true
+  }
+  return false
+}
+
 // ---- Save ----
 
 async function doSave() {
@@ -419,9 +432,15 @@ async function doSave() {
     const res = await projectMonthlyRecordService.update(props.record.id, req)
     detail.value = res.data ?? null
     activeEditGroup.value = null
-    toast.add({ severity: 'success', summary: 'Đã lưu', detail: 'Đã lưu thành công', life: 3000 })
+    // T023: show count of affected months if any
+    const affected = res.data?.affectedMonths ?? 0
+    const detail_msg = affected > 0
+      ? `Lưu thành công. Đã cập nhật thêm ${affected} tháng liên quan.`
+      : 'Lưu thành công.'
+    toast.add({ severity: 'success', summary: 'Đã lưu', detail: detail_msg, life: 3000 })
     emits('saved')
   } catch (err: unknown) {
+    // T024: on error, show BE message and do NOT update local detail data
     const axiosErr = err as { response?: { status?: number; data?: { message?: string; errors?: Record<string, string> } } }
     if (axiosErr?.response?.status === 422 && axiosErr.response.data?.errors) {
       for (const [field, msg] of Object.entries(axiosErr.response.data.errors)) {
@@ -429,15 +448,17 @@ async function doSave() {
       }
       toast.add({ severity: 'warn', summary: 'Lỗi dữ liệu', detail: 'Vui lòng kiểm tra lại các trường', life: 4000 })
     } else {
-      toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể lưu, vui lòng thử lại', life: 4000 })
+      const beMessage = axiosErr?.response?.data?.message ?? 'Không thể lưu, vui lòng thử lại'
+      toast.add({ severity: 'error', summary: 'Lỗi', detail: beMessage, life: 4000 })
     }
+    // T024: detail.value is intentionally NOT updated on error
   } finally {
     saving.value = false
   }
 }
 
 function saveGroup(groupId: string) {
-  if (hasOverwrittenFields(groupId)) {
+  if (hasExistingDataInGroup(groupId)) {
     confirm.require({
       message: 'Thay đổi này có thể sẽ làm thay đổi các nhóm giá trị trong các tháng khác',
       header: 'Xác nhận thay đổi',
@@ -445,7 +466,7 @@ function saveGroup(groupId: string) {
       rejectProps: { label: 'Hủy', severity: 'secondary', outlined: true },
       acceptProps: { label: 'Xác nhận', severity: 'warning' },
       accept: () => doSave(),
-      reject: () => cancelEdit(groupId)
+      reject: () => {}
     })
   } else {
     doSave()

@@ -71,6 +71,10 @@ public class ProjectMonthRecordController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(ApiResponse.error(ex.getCode(), ex.getMessage()));
             }
+            if ("MONTHLY_RECORD_LOCKED".equals(ex.getCode())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.error(ex.getCode(), ex.getMessage()));
+            }
             throw ex;
         }
     }

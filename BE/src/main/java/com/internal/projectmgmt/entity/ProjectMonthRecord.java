@@ -31,6 +31,10 @@ public class ProjectMonthRecord {
     @Builder.Default
     private boolean active = true;
 
+    @Column(name = "locked", nullable = false)
+    @Builder.Default
+    private boolean locked = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
