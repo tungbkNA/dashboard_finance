@@ -222,8 +222,10 @@ Các trường dẫn xuất PHẢI được ghi chép trong đặc tả.
 
 ### 8.1 Trạng Thái Dự Án — status_project
 
+- OPEN
 - INPROGRESS
 - PENDING
+- DONE
 - CLOSE
 
 ### 8.2 Trạng Thái Hợp Đồng — status_contract

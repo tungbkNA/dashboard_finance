@@ -27,6 +27,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(code, message, null);
     }
 
+    public static <T> ApiResponse<T> of(String code, String message, T data) {
+        return new ApiResponse<>(code, message, data);
+    }
+
     public String getCode() {
         return code;
     }
