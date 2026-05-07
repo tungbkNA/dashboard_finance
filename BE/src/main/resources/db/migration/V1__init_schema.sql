@@ -1,0 +1,4 @@
+-- V1: Initial schema baseline
+-- Dashboard Finance — Internal Project Management System
+-- Business tables will be added in subsequent feature migrations
+-- Feature: 001-technical-foundation
