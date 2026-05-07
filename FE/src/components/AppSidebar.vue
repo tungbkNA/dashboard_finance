@@ -33,6 +33,9 @@ const allMenuItems = [
   { label: 'Cấu hình',           icon: 'pi-cog',       route: '/config',          permission: null,          sub: false },
   { label: 'Quản lý Phân quyền', icon: 'pi-shield',    route: '/admin/roles',     permission: 'MANAGE_ROLE', sub: true  },
   { label: 'Quản lý Người dùng', icon: 'pi-users',     route: '/admin/users',     permission: 'MANAGE_USER', sub: true  },
+  { label: 'Sổ tay trung tâm',   icon: 'pi-book',      route: '/handbook/file-groups', permission: 'MANAGE_HANDBOOK', sub: false },
+  { label: 'Quản lý nhóm file',  icon: 'pi-folder',    route: '/handbook/file-groups', permission: 'MANAGE_HANDBOOK', sub: true  },
+  { label: 'Danh mục file',      icon: 'pi-file',      route: '/handbook/files',       permission: 'MANAGE_HANDBOOK', sub: true  },
 ]
 
 const visibleMenuItems = computed(() =>

@@ -49,6 +49,18 @@ const router = createRouter({
       name: 'admin-users',
       component: () => import('@/views/admin/users/UserListView.vue'),
       meta: { requiresAuth: true, permission: 'MANAGE_USER' }
+    },
+    {
+      path: '/handbook/file-groups',
+      name: 'handbook-file-groups',
+      component: () => import('@/views/handbook/FileGroupView.vue'),
+      meta: { requiresAuth: true, permission: 'MANAGE_HANDBOOK' }
+    },
+    {
+      path: '/handbook/files',
+      name: 'handbook-files',
+      component: () => import('@/views/handbook/FileListView.vue'),
+      meta: { requiresAuth: true, permission: 'MANAGE_HANDBOOK' }
     }
   ]
 })
