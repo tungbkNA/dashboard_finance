@@ -3,21 +3,21 @@
     <h1 class="text-2xl font-semibold mb-4">Cài Đặt Dự Án</h1>
 
     <TabView>
-      <TabPanel>
+      <TabPanel value="0">
         <template #header>
           <span><i class="pi pi-folder mr-2" />Dự án</span>
         </template>
         <ProjectTab />
       </TabPanel>
 
-      <TabPanel>
+      <TabPanel value="1">
         <template #header>
           <span><i class="pi pi-tags mr-2" />Loại dự án</span>
         </template>
         <ProjectTypeTab />
       </TabPanel>
 
-      <TabPanel>
+      <TabPanel value="2">
         <template #header>
           <span><i class="pi pi-users mr-2" />Khách hàng</span>
         </template>
