@@ -24,26 +24,26 @@ public class FileGroupController {
     private final FileGroupService fileGroupService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_VIEW')")
     public ResponseEntity<ApiResponse<List<FileGroupResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.success(fileGroupService.findAll()));
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_VIEW')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getActive() {
         return ResponseEntity.ok(ApiResponse.success(fileGroupService.findAllActive()));
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<FileGroupResponse>> create(@Valid @RequestBody FileGroupRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(fileGroupService.create(request)));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<FileGroupResponse>> update(
             @PathVariable UUID id,
             @Valid @RequestBody FileGroupUpdateRequest request) {
@@ -51,7 +51,7 @@ public class FileGroupController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         fileGroupService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa nhóm file thành công", null));

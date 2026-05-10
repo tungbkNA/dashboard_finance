@@ -31,7 +31,10 @@ public class JwtService {
         List<String> permissions = user.getAuthorities().stream()
                 .map(a -> a.getAuthority())
                 .collect(Collectors.toList());
+        return generateToken(user, permissions);
+    }
 
+    public String generateToken(AppUser user, List<String> permissions) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMillis);
 

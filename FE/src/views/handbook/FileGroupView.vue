@@ -1,12 +1,18 @@
 <template>
   <div class="view-container p-4">
-    <div class="flex align-items-center justify-content-between mb-4">
-      <h1 class="text-2xl font-semibold m-0">Quản Lý Nhóm File</h1>
-      <Button label="Thêm mới" icon="pi pi-plus" @click="openCreate" />
+    <h1 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem">Quản Lý Nhóm File</h1>
+
+    <div class="toolbar" style="margin-bottom: 0.75rem">
+      <div class="toolbar-filters">
+        <InputText v-model="filterKeyword" placeholder="Tìm tên nhóm..." class="filter-input" />
+      </div>
+      <div class="toolbar-actions">
+        <Button label="Thêm mới" icon="pi pi-plus" @click="openCreate" />
+      </div>
     </div>
 
     <DataTable
-      :value="groups"
+      :value="filteredGroups"
       :loading="loading"
       dataKey="id"
       paginator
@@ -47,10 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
 import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
@@ -66,6 +73,13 @@ const groups = ref<FileGroupResponse[]>([])
 const loading = ref(false)
 const showDialog = ref(false)
 const selectedGroup = ref<FileGroupResponse | null>(null)
+const filterKeyword = ref('')
+
+const filteredGroups = computed(() => {
+  const kw = filterKeyword.value.trim().toLowerCase()
+  if (!kw) return groups.value
+  return groups.value.filter(g => g.name.toLowerCase().includes(kw))
+})
 
 onMounted(loadGroups)
 
@@ -115,3 +129,34 @@ async function doDelete(group: FileGroupResponse) {
   }
 }
 </script>
+
+<style scoped>
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.filter-input {
+  width: 220px;
+}
+</style>

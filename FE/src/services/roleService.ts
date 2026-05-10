@@ -1,10 +1,18 @@
 import api from '@/services/api'
 import type { Role, RoleDetail, RoleRequest, UpdateRolePermissionsRequest, Permission } from '@/types/role'
+import type { PageResponse } from '@/types/api'
 
 export const roleService = {
   async listRoles(): Promise<Role[]> {
     const res = await api.get<{ data: Role[] }>('/api/roles')
     return res.data.data
+  },
+
+  async searchRoles(keyword: string, page: number, size: number): Promise<PageResponse<Role>> {
+    const res = await api.get<{ data: PageResponse<Role> }>('/api/roles/search', {
+      params: { keyword, page, size }
+    })
+    return res.data.data!
   },
 
   async getRole(id: string): Promise<RoleDetail> {

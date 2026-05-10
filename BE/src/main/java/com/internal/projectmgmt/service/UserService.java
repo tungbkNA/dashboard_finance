@@ -11,6 +11,10 @@ import com.internal.projectmgmt.mapper.UserMapper;
 import com.internal.projectmgmt.repository.AppUserRepository;
 import com.internal.projectmgmt.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,15 @@ public class UserService {
                 .filter(u -> active == null || u.isActive() == active)
                 .collect(Collectors.toList());
         return users.stream().map(userMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserResponse> search(String keyword, String position, UUID roleId, Boolean active, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "username"));
+        String kw = keyword == null ? "" : keyword.trim();
+        String pos = (position == null || position.isBlank()) ? null : position.trim();
+        Page<AppUser> result = appUserRepository.searchUsers(kw, pos, roleId, active, pageable);
+        return result.map(userMapper::toResponse);
     }
 
     @Transactional(readOnly = true)

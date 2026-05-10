@@ -69,3 +69,18 @@ export interface DeleteCheckResponse {
   inUse: boolean
   usageCount: number
 }
+
+// ---- Import ----
+
+export interface ProjectImportRowError {
+  row: number
+  field: string
+  message: string
+}
+
+export interface ProjectImportResult {
+  totalRows: number
+  successCount: number
+  errorCount: number
+  errors: ProjectImportRowError[]
+}

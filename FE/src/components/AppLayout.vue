@@ -19,6 +19,7 @@ import AppHeader from './AppHeader.vue'
 .app-layout {
   display: flex;
   min-height: 100vh;
+  background: #f8fafc;
 }
 
 .app-main {
@@ -26,12 +27,13 @@ import AppHeader from './AppHeader.vue'
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .app-content {
   flex: 1;
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: auto;
-  background: var(--p-surface-50, #f9fafb);
+  background: #f8fafc;
 }
 </style>

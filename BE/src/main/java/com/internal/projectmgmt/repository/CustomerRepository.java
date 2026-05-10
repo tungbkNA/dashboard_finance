@@ -20,6 +20,8 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
     boolean existsByCustomerCodeIgnoreCaseAndDeletedFalse(String customerCode);
 
+    Optional<Customer> findByCustomerCodeIgnoreCaseAndDeletedFalse(String customerCode);
+
     @Query("SELECT COUNT(p) FROM Project p WHERE p.customer.id = :customerId AND p.deleted = false")
     long countActiveProjectsByCustomerId(UUID customerId);
 }

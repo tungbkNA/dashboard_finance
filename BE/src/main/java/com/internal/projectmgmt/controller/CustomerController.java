@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +23,13 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('PROJECT_SETTINGS_VIEW')")
     public ResponseEntity<ApiResponse<List<CustomerResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.success(customerService.findAll()));
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('PROJECT_SETTINGS_MANAGE')")
     public ResponseEntity<ApiResponse<CustomerResponse>> create(
             @Valid @RequestBody CustomerRequest request) {
         return ResponseEntity
@@ -35,6 +38,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PROJECT_SETTINGS_MANAGE')")
     public ResponseEntity<ApiResponse<CustomerResponse>> update(
             @PathVariable UUID id,
             @Valid @RequestBody CustomerRequest request) {
@@ -42,6 +46,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PROJECT_SETTINGS_MANAGE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> delete(
             @PathVariable UUID id,
             @RequestParam(defaultValue = "false") boolean confirmed) {

@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- Toolbar -->
-    <div class="flex justify-end mb-3">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem">
       <Button label="Thêm khách hàng" icon="pi pi-plus" @click="openCreate" />
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex justify-center py-8">
+    <div v-if="loading" style="display: flex; justify-content: center; padding: 2rem 0">
       <ProgressSpinner style="width: 40px; height: 40px" />
     </div>
 
@@ -52,7 +52,7 @@
             <small class="p-error">{{ formErrors.customerName }}</small>
           </div>
         </div>
-        <div class="flex justify-end gap-2 pt-2">
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 0.5rem">
           <Button label="Hủy" severity="secondary" text @click="dialogVisible = false" type="button" />
           <Button :label="editingItem ? 'Lưu' : 'Thêm'" type="submit" :loading="saving" />
         </div>
@@ -66,7 +66,7 @@
         Khách hàng này đang được <strong>{{ inUsageCount }}</strong> dự án sử dụng.
         Bạn vẫn muốn xóa?
       </p>
-      <div class="flex justify-end gap-2">
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem">
         <Button label="Hủy" severity="secondary" text @click="inUseDialogVisible = false" />
         <Button label="Xóa" severity="danger" :loading="saving" @click="confirmForceDelete" />
       </div>

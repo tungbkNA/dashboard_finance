@@ -1,54 +1,63 @@
 <template>
   <div class="view-container p-4">
-    <div class="flex align-items-center justify-content-between mb-4">
-      <h1 class="text-2xl font-semibold m-0">Danh Mục File</h1>
-      <Button label="Thêm mới" icon="pi pi-plus" @click="openCreate" />
-    </div>
+    <h1 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem">Danh Mục File</h1>
 
-    <!-- Filters (US3) -->
-    <div class="flex flex-wrap align-items-center gap-3 mb-3">
-      <IconField>
-        <InputIcon class="pi pi-search" />
-        <InputText
-          v-model="filters.keyword"
-          placeholder="Tìm kiếm theo tên file..."
-          style="width: 280px"
-          @input="onSearchInput"
+    <div class="toolbar" style="margin-bottom: 0.75rem">
+      <div class="toolbar-filters">
+        <IconField>
+          <InputIcon class="pi pi-search" />
+          <InputText
+            v-model="filters.keyword"
+            placeholder="Tìm kiếm theo tên file..."
+            class="filter-input"
+            @input="onSearchInput"
+          />
+        </IconField>
+        <Dropdown
+          v-model="filters.groupId"
+          :options="activeGroups"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Lọc theo nhóm"
+          showClear
+          style="width: 200px"
+          @change="onFilterChange"
         />
-      </IconField>
-      <Dropdown
-        v-model="filters.groupId"
-        :options="activeGroups"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Lọc theo nhóm"
-        showClear
-        style="width: 200px"
-        @change="loadRecords"
-      />
-      <div class="flex align-items-center gap-2">
-        <Checkbox
-          v-model="filters.includeInactive"
-          :binary="true"
-          inputId="includeInactive"
-          @change="loadRecords"
+        <div class="checkbox-group">
+          <Checkbox
+            v-model="filters.includeInactive"
+            :binary="true"
+            inputId="includeInactive"
+            @change="onFilterChange"
+          />
+          <label for="includeInactive" class="cursor-pointer text-sm">Hiển thị cả nhóm ngưng HĐ</label>
+        </div>
+        <Button
+          v-if="hasActiveFilters"
+          icon="pi pi-filter-slash"
+          severity="secondary"
+          text
+          size="small"
+          @click="clearFilters"
+          v-tooltip.top="'Xóa bộ lọc'"
         />
-        <label for="includeInactive" class="cursor-pointer text-sm">Hiển thị cả nhóm ngưng HĐ</label>
       </div>
-      <Button
-        v-if="hasActiveFilters"
-        icon="pi pi-filter-slash"
-        severity="secondary"
-        text
-        size="small"
-        @click="clearFilters"
-        v-tooltip.top="'Xóa bộ lọc'"
-      />
+      <div class="toolbar-actions">
+        <Button label="Thêm mới" icon="pi pi-plus" @click="openCreate" />
+      </div>
     </div>
 
     <DataTable
       :value="records"
       :loading="loading"
+      :lazy="true"
+      :paginator="true"
+      :rows="pageSize"
+      :totalRecords="totalRecords"
+      :first="first"
+      :rowsPerPageOptions="[5, 10, 20, 50, 100]"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      @page="onPageChange"
       dataKey="id"
       stripedRows
       emptyMessage="Chưa có dữ liệu"
@@ -77,15 +86,6 @@
       </Column>
     </DataTable>
 
-    <Paginator
-      v-if="totalRecords > 0"
-      :rows="pageSize"
-      :totalRecords="totalRecords"
-      :first="currentPage * pageSize"
-      @page="onPageChange"
-      class="mt-2"
-    />
-
     <FileRecordDialog
       v-if="showDialog"
       :record="selectedRecord"
@@ -102,7 +102,6 @@ import { ref, computed, onMounted } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
-import Paginator from 'primevue/paginator'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
@@ -127,6 +126,7 @@ const selectedRecord = ref<FileRecordResponse | null>(null)
 const totalRecords = ref(0)
 const currentPage = ref(0)
 const pageSize = ref(20)
+const first = ref(0)
 
 const filters = ref({
   keyword: '',
@@ -168,18 +168,28 @@ function onSearchInput() {
   if (searchTimeout) clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     currentPage.value = 0
+    first.value = 0
     loadRecords()
   }, 300)
+}
+
+function onFilterChange() {
+  currentPage.value = 0
+  first.value = 0
+  loadRecords()
 }
 
 function clearFilters() {
   filters.value = { keyword: '', groupId: null, includeInactive: false }
   currentPage.value = 0
+  first.value = 0
   loadRecords()
 }
 
-function onPageChange(event: { page: number }) {
+function onPageChange(event: { page: number; rows: number; first: number }) {
   currentPage.value = event.page
+  pageSize.value = event.rows
+  first.value = event.first
   loadRecords()
 }
 
@@ -224,3 +234,42 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('vi-VN')
 }
 </script>
+
+<style scoped>
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.filter-input {
+  width: 240px;
+}
+</style>

@@ -25,6 +25,8 @@ public class ProjectMonthRecordResponse {
     @JsonProperty("isFirstMonth")
     private boolean isFirstMonth;
     private BigDecimal price;
+    private String customerName;
+    private String representUserName;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 

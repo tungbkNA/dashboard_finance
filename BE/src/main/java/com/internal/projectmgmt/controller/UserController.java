@@ -9,6 +9,7 @@ import com.internal.projectmgmt.entity.AppUser;
 import com.internal.projectmgmt.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,10 +27,23 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('MANAGE_USER')")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<ApiResponse<List<UserResponse>>> listAll(
             @RequestParam(required = false) Boolean active) {
         return ResponseEntity.ok(ApiResponse.success(userService.listAll(active)));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) UUID roleId,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity
+                .ok(ApiResponse.success(userService.search(keyword, position, roleId, active, page, size)));
     }
 
     @PostMapping
@@ -40,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_USER')")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(userService.getById(id)));
     }

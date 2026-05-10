@@ -1,18 +1,39 @@
 <template>
   <div class="view-container p-4">
-    <div class="flex align-items-center justify-content-between mb-4">
-      <h1 class="text-2xl font-semibold m-0">Quản Lý Người Dùng</h1>
-      <Button label="Tạo mới" icon="pi pi-user-plus" @click="openCreate" />
+    <h1 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem">Quản Lý Người Dùng</h1>
+
+    <!-- Toolbar: filters left, actions right -->
+    <div class="toolbar" style="margin-bottom: 0.75rem">
+      <div class="toolbar-filters">
+        <InputText v-model="filterKeyword" placeholder="Tên đăng nhập / Mã NV..."
+                   class="filter-input" @keydown.enter="doSearch" />
+        <Select v-model="filterPosition" :options="positionOptions" optionLabel="label" optionValue="value"
+                   placeholder="Chức vụ" showClear style="min-width: 130px" @change="doSearch" />
+        <Select v-model="filterRoleId" :options="roles" optionLabel="roleName" optionValue="id"
+                   placeholder="Role" showClear style="min-width: 150px" @change="doSearch" />
+        <Select v-model="filterActive" :options="statusOptions" optionLabel="label" optionValue="value"
+                   placeholder="Trạng thái" showClear style="min-width: 140px" @change="doSearch" />
+        <Button icon="pi pi-search" severity="primary" outlined size="small" @click="doSearch" v-tooltip.top="'Tìm kiếm'" />
+      </div>
+      <div class="toolbar-actions">
+        <Button label="Tạo mới" icon="pi pi-user-plus" @click="openCreate" />
+      </div>
     </div>
 
     <DataTable
       :value="users"
       :loading="loading"
       dataKey="id"
-      paginator
-      :rows="20"
+      :lazy="true"
+      :paginator="true"
+      :rows="pageSize"
+      :totalRecords="totalRecords"
+      :first="first"
+      @page="onPage"
+      :rowsPerPageOptions="[5, 10, 20, 50, 100]"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
       stripedRows
-      emptyMessage="Chưa có người dùng nào"
+      emptyMessage="Không tìm thấy người dùng nào"
       class="p-datatable-sm"
     >
       <Column field="username" header="Tên đăng nhập" />
@@ -76,18 +97,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import Dialog from 'primevue/dialog'
 import Password from 'primevue/password'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import type { AppUser } from '@/types/user'
+import type { Role } from '@/types/role'
 import { userService } from '@/services/userService'
+import { roleService } from '@/services/roleService'
 import { useAuthStore } from '@/stores/authStore'
 import UserDialog from '@/components/admin/users/UserDialog.vue'
 
@@ -98,6 +123,7 @@ const authStore = useAuthStore()
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/
 
 const users = ref<AppUser[]>([])
+const roles = ref<Role[]>([])
 const loading = ref(false)
 const showDialog = ref(false)
 const selectedUser = ref<AppUser | null>(null)
@@ -107,12 +133,68 @@ const newPasswordError = ref('')
 const savingPassword = ref(false)
 let passwordTargetId = ''
 
-onMounted(loadUsers)
+// ---- Pagination ----
+const totalRecords = ref(0)
+const currentPage = ref(0)
+const pageSize = ref(20)
+const first = ref(0)
+
+// ---- Filters ----
+const filterKeyword = ref('')
+const filterPosition = ref<string | null>(null)
+const filterRoleId = ref<string | null>(null)
+const filterActive = ref<boolean | null>(null)
+
+const positionOptions = [
+  { label: 'PM', value: 'PM' },
+  { label: 'PU', value: 'PU' }
+]
+
+const statusOptions = [
+  { label: 'Active', value: true },
+  { label: 'Inactive', value: false }
+]
+
+let searchTimeout: ReturnType<typeof setTimeout> | null = null
+
+watch(filterKeyword, () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => doSearch(), 400)
+})
+
+function onPage(event: { page: number; rows: number; first: number }) {
+  currentPage.value = event.page
+  pageSize.value = event.rows
+  first.value = event.first
+  loadUsers()
+}
+
+function doSearch() {
+  currentPage.value = 0
+  first.value = 0
+  loadUsers()
+}
+
+onMounted(async () => {
+  try {
+    roles.value = await roleService.listRoles()
+  } catch { /* silent */ }
+  loadUsers()
+})
 
 async function loadUsers() {
   loading.value = true
   try {
-    users.value = await userService.listUsers()
+    const page = await userService.searchUsers({
+      keyword: filterKeyword.value || undefined,
+      position: filterPosition.value,
+      roleId: filterRoleId.value,
+      active: filterActive.value,
+      page: currentPage.value,
+      size: pageSize.value
+    })
+    users.value = page.content ?? []
+    totalRecords.value = page.totalElements ?? 0
   } finally {
     loading.value = false
   }
@@ -178,6 +260,37 @@ async function doDeactivate(user: AppUser) {
 </script>
 
 <style scoped>
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.filter-input {
+  min-width: 180px;
+  max-width: 220px;
+}
+
 .form-row {
   display: flex;
   align-items: flex-start;

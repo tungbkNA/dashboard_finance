@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '@/views/DashboardView.vue'
 import ProjectSettingsView from '@/views/ProjectSettingsView.vue'
 import ProjectManagementView from '@/views/ProjectManagementView.vue'
-import ConfigView from '@/views/ConfigView.vue'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
@@ -18,25 +17,19 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, permission: 'VIEW_DASHBOARD' }
     },
     {
       path: '/project-settings',
       name: 'project-settings',
       component: ProjectSettingsView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, permission: 'MANAGE_PROJECT_SETTINGS' }
     },
     {
       path: '/projects',
       name: 'projects',
       component: ProjectManagementView,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/config',
-      name: 'config',
-      component: ConfigView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, permission: 'MANAGE_PROJECT' }
     },
     {
       path: '/admin/roles',

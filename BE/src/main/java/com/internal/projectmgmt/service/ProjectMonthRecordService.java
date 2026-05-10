@@ -11,6 +11,10 @@ import com.internal.projectmgmt.exception.AppException;
 import com.internal.projectmgmt.mapper.ProjectMonthRecordMapper;
 import com.internal.projectmgmt.repository.ProjectMonthRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +36,19 @@ public class ProjectMonthRecordService {
     // ===================== US1: CRUD =====================
 
     @Transactional(readOnly = true)
-    public List<ProjectMonthRecordSummaryResponse> findAllByMonthKey(String monthKey) {
+    public List<ProjectMonthRecordResponse> findAllByMonthKey(String monthKey) {
         return repo.findByMonthKeyAndActiveTrue(monthKey).stream()
-                .map(mapper::toSummaryResponse)
+                .map(r -> mapper.toResponse(r, isFirstMonth(r)))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProjectMonthRecordResponse> search(String keyword, String monthKey, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "project.projectCode"));
+        String kw = keyword == null ? "" : keyword.trim();
+        String mk = (monthKey == null || monthKey.isBlank()) ? null : monthKey.trim();
+        Page<ProjectMonthRecord> result = repo.searchRecords(kw, mk, pageable);
+        return result.map(r -> mapper.toResponse(r, isFirstMonth(r)));
     }
 
     @Transactional(readOnly = true)
@@ -120,6 +133,15 @@ public class ProjectMonthRecordService {
                 repo.save(r);
             });
         }
+    }
+
+    @Transactional
+    public void softDeleteByProjectId(UUID projectId) {
+        List<ProjectMonthRecord> records = repo.findByProjectIdOrderByMonthKeyAsc(projectId);
+        for (ProjectMonthRecord r : records) {
+            r.setActive(false);
+        }
+        repo.saveAll(records);
     }
 
     /**
