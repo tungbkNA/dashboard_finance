@@ -412,10 +412,6 @@ function formatMonthLabel(monthKey: string): string {
   return `${m}/${y}`
 }
 
-function formatNumber(val: number): string {
-  return val?.toLocaleString('vi-VN') ?? '0'
-}
-
 const g5DoanhThuChartData = computed(() => ({
   labels: g5Entries.value.map(e => formatMonthLabel(e.monthKey)),
   datasets: [{

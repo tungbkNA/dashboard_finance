@@ -398,18 +398,6 @@ function buildFullRequest(): ProjectMonthRecordUpdateRequest {
 
 // ---- Overwrite check ----
 
-function hasOverwrittenFields(groupId: string): boolean {
-  const snapshot = groupSnapshots[groupId]
-  const form = groupForms[groupId]
-  if (!snapshot || !form) return false
-  for (const key of Object.keys(form)) {
-    if (snapshot[key] !== null && snapshot[key] !== undefined && form[key] !== snapshot[key]) {
-      return true
-    }
-  }
-  return false
-}
-
 function hasExistingDataInGroup(groupId: string): boolean {
   if (!detail.value) return false
   const meta = groupMeta(groupId)
