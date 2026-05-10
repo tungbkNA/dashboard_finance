@@ -58,7 +58,8 @@ class UserServiceTest {
 
     @Test
     void create_shouldBCryptHashPassword() {
-        UserRequest req = new UserRequest("newuser", "user@test.com", "New User", "plaintext1", roleId);
+        UserRequest req = new UserRequest("newuser", "user@test.com", "New User", "plaintext1", roleId, null, null,
+                null);
         when(appUserRepository.existsByUsernameAndDeletedFalse("newuser")).thenReturn(false);
         when(appUserRepository.existsByEmailAndDeletedFalse("user@test.com")).thenReturn(false);
         when(roleRepository.findByIdAndDeletedFalse(roleId)).thenReturn(Optional.of(activeRole));
@@ -68,7 +69,7 @@ class UserServiceTest {
             AppUser u = inv.getArgument(0);
             return new com.internal.projectmgmt.dto.user.UserResponse(u.getId(), u.getUsername(),
                     u.getEmail(), u.getDisplayName(), u.getRole().getId(),
-                    u.getRole().getRoleName(), u.isActive(), u.getCreatedAt());
+                    u.getRole().getRoleName(), u.isActive(), null, null, null, u.getCreatedAt());
         });
 
         userService.create(req);
@@ -83,7 +84,7 @@ class UserServiceTest {
     @Test
     void create_withDuplicateUsername_shouldThrow() {
         when(appUserRepository.existsByUsernameAndDeletedFalse("dup")).thenReturn(true);
-        UserRequest req = new UserRequest("dup", "dup@test.com", "Dup", "password1", roleId);
+        UserRequest req = new UserRequest("dup", "dup@test.com", "Dup", "password1", roleId, null, null, null);
         assertThatThrownBy(() -> userService.create(req))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getCode()).isEqualTo("USER_USERNAME_EXISTS"));
@@ -93,7 +94,7 @@ class UserServiceTest {
     void create_withDuplicateEmail_shouldThrow() {
         when(appUserRepository.existsByUsernameAndDeletedFalse("newuser")).thenReturn(false);
         when(appUserRepository.existsByEmailAndDeletedFalse("dup@test.com")).thenReturn(true);
-        UserRequest req = new UserRequest("newuser", "dup@test.com", "Dup", "password1", roleId);
+        UserRequest req = new UserRequest("newuser", "dup@test.com", "Dup", "password1", roleId, null, null, null);
         assertThatThrownBy(() -> userService.create(req))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getCode()).isEqualTo("USER_EMAIL_EXISTS"));
@@ -106,7 +107,7 @@ class UserServiceTest {
         when(appUserRepository.existsByUsernameAndDeletedFalse("newuser")).thenReturn(false);
         when(appUserRepository.existsByEmailAndDeletedFalse("user@test.com")).thenReturn(false);
         when(roleRepository.findByIdAndDeletedFalse(roleId)).thenReturn(Optional.of(inactiveRole));
-        UserRequest req = new UserRequest("newuser", "user@test.com", "New", "password1", roleId);
+        UserRequest req = new UserRequest("newuser", "user@test.com", "New", "password1", roleId, null, null, null);
         assertThatThrownBy(() -> userService.create(req))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getCode()).isEqualTo("ROLE_NOT_FOUND_OR_INACTIVE"));

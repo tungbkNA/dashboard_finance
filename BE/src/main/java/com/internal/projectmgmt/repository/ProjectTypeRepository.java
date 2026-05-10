@@ -22,6 +22,8 @@ public interface ProjectTypeRepository extends JpaRepository<ProjectType, UUID> 
 
     boolean existsByKeyIgnoreCaseAndDeletedFalse(String key);
 
+    Optional<ProjectType> findByKeyIgnoreCaseAndDeletedFalse(String key);
+
     @Query("SELECT COUNT(p) FROM Project p WHERE p.projectType.id = :projectTypeId AND p.deleted = false")
     long countActiveProjectsByProjectTypeId(UUID projectTypeId);
 }

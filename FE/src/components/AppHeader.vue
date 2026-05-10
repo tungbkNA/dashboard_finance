@@ -43,54 +43,77 @@ async function handleLogout() {
 
 <style scoped>
 .app-header {
-  height: 56px;
-  background: var(--p-primary-600, #dc2626);
-  color: #fff;
+  height: 60px;
+  background: #ffffff;
+  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0 1.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .header-brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 1.1rem;
-  font-weight: 600;
 }
 
 .header-icon {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
+  color: #ef4444;
+}
+
+.header-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 }
 
 .header-user {
-  opacity: 0.95;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   font-weight: 500;
+  color: #334155;
 }
 
 .user-role {
-  opacity: 0.75;
+  color: #94a3b8;
   font-size: 0.8rem;
-  margin-left: 0.25rem;
+  font-weight: 400;
 }
 
 .header-version {
   font-size: 0.8rem;
-  opacity: 0.8;
+  color: #94a3b8;
 }
 
 .logout-btn {
-  color: #fff !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #64748b !important;
+  border-color: #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  color: #ef4444 !important;
+  border-color: #fecaca !important;
+  background: #fef2f2 !important;
 }
 </style>
 

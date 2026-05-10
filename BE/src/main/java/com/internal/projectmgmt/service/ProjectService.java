@@ -6,6 +6,8 @@ import com.internal.projectmgmt.entity.AppUser;
 import com.internal.projectmgmt.entity.Customer;
 import com.internal.projectmgmt.entity.Project;
 import com.internal.projectmgmt.entity.ProjectType;
+import com.internal.projectmgmt.entity.StatusContract;
+import com.internal.projectmgmt.entity.StatusProject;
 import com.internal.projectmgmt.exception.AppException;
 import com.internal.projectmgmt.exception.ShrinkWarningException;
 import com.internal.projectmgmt.mapper.ProjectMapper;
@@ -14,6 +16,10 @@ import com.internal.projectmgmt.repository.CustomerRepository;
 import com.internal.projectmgmt.repository.ProjectRepository;
 import com.internal.projectmgmt.repository.ProjectTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +42,19 @@ public class ProjectService {
         return projectRepository.findAllByDeletedFalse().stream()
                 .map(projectMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProjectResponse> search(String keyword, UUID projectTypeId, UUID customerId,
+            StatusContract statusContract, StatusProject statusProject,
+            int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        String kw = keyword == null ? "" : keyword.trim();
+        String sc = statusContract != null ? statusContract.name() : null;
+        String sp = statusProject != null ? statusProject.name() : null;
+        Page<Project> result = projectRepository.searchProjects(kw, projectTypeId, customerId,
+                sc, sp, pageable);
+        return result.map(projectMapper::toResponse);
     }
 
     @Transactional(readOnly = true)
@@ -123,6 +142,7 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException("PROJECT_NOT_FOUND", "Dự án không tồn tại"));
         project.setDeleted(true);
         projectRepository.save(project);
+        projectMonthRecordService.softDeleteByProjectId(id);
     }
 
     // ---- helpers ----

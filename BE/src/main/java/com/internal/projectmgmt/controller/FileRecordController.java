@@ -22,7 +22,7 @@ public class FileRecordController {
     private final FileRecordService fileRecordService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_VIEW')")
     public ResponseEntity<ApiResponse<Page<FileRecordResponse>>> getAll(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UUID groupId,
@@ -34,14 +34,14 @@ public class FileRecordController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<FileRecordResponse>> create(@Valid @RequestBody FileRecordRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(fileRecordService.create(request)));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<FileRecordResponse>> update(
             @PathVariable UUID id,
             @Valid @RequestBody FileRecordRequest request) {
@@ -49,7 +49,7 @@ public class FileRecordController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_HANDBOOK')")
+    @PreAuthorize("hasAuthority('HANDBOOK_MANAGE')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         fileRecordService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa bản ghi file thành công", null));

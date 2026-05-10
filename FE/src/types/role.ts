@@ -2,6 +2,7 @@
 
 export interface Role {
   id: string
+  roleCode: string
   roleName: string
   description: string | null
   active: boolean
@@ -24,6 +25,7 @@ export interface Permission {
 export interface RoleRequest {
   roleName: string
   description?: string
+  active?: boolean
 }
 
 export interface UpdateRolePermissionsRequest {

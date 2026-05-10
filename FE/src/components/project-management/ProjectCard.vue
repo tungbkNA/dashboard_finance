@@ -115,7 +115,6 @@ import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { projectMonthlyRecordService } from '@/services/projectMonthlyRecordService'
 import type {
-  ProjectMonthRecordSummary,
   ProjectMonthRecordDetail,
   ProjectMonthRecordUpdateRequest,
   FieldMetadata
@@ -124,7 +123,7 @@ import type {
 // ---- Props & Emits ----
 
 const props = defineProps<{
-  record: ProjectMonthRecordSummary
+  record: ProjectMonthRecordDetail
   fieldMetadata: FieldMetadata
   mode: 'view' | 'edit'
 }>()

@@ -4,6 +4,7 @@ import com.internal.projectmgmt.dto.ApiResponse;
 import com.internal.projectmgmt.dto.auth.LoginRequest;
 import com.internal.projectmgmt.dto.auth.LoginResponse;
 import com.internal.projectmgmt.entity.AppUser;
+import com.internal.projectmgmt.repository.PermissionRepository;
 import com.internal.projectmgmt.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -19,7 +21,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private static final String ADMIN_USERNAME = "admin";
+
     private final AuthService authService;
+    private final PermissionRepository permissionRepository;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
@@ -36,9 +41,14 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse.UserInfo>> me(
             @AuthenticationPrincipal AppUser user,
             Authentication authentication) {
-        java.util.List<String> permissions = authentication.getAuthorities().stream()
-                .map(a -> a.getAuthority())
-                .collect(Collectors.toList());
+        List<String> permissions;
+        if (ADMIN_USERNAME.equals(user.getUsername())) {
+            permissions = permissionRepository.findAllCodes();
+        } else {
+            permissions = authentication.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .collect(Collectors.toList());
+        }
 
         LoginResponse.UserInfo info = new LoginResponse.UserInfo(
                 user.getId(),

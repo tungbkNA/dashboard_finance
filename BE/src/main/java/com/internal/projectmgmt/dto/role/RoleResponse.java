@@ -5,20 +5,22 @@ import java.util.List;
 import java.util.UUID;
 
 public record RoleResponse(
-        UUID id,
-        String roleName,
-        String description,
-        boolean active,
-        long userCount,
-        OffsetDateTime createdAt) {
+                UUID id,
+                String roleCode,
+                String roleName,
+                String description,
+                boolean active,
+                long userCount,
+                OffsetDateTime createdAt) {
 
-    public record RoleDetailResponse(
-            UUID id,
-            String roleName,
-            String description,
-            boolean active,
-            long userCount,
-            OffsetDateTime createdAt,
-            List<PermissionResponse> permissions) {
-    }
+        public record RoleDetailResponse(
+                        UUID id,
+                        String roleCode,
+                        String roleName,
+                        String description,
+                        boolean active,
+                        long userCount,
+                        OffsetDateTime createdAt,
+                        List<PermissionResponse> permissions) {
+        }
 }

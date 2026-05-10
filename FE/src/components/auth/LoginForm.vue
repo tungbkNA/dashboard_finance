@@ -118,33 +118,36 @@ async function handleSubmit() {
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: var(--p-surface-0, #fff);
-  border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.75rem 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
 }
 
 .login-icon {
   font-size: 2.5rem;
-  color: var(--p-primary-600, #dc2626);
+  color: #ef4444;
+  filter: drop-shadow(0 4px 8px rgba(239, 68, 68, 0.2));
 }
 
 .login-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin: 0.75rem 0 0.25rem;
-  color: var(--p-surface-900, #18181b);
+  margin: 0.75rem 0 0.35rem;
+  color: #0f172a;
+  letter-spacing: -0.03em;
 }
 
 .login-subtitle {
   font-size: 0.875rem;
-  color: var(--p-surface-500, #71717a);
+  color: #94a3b8;
   margin: 0;
+  font-weight: 400;
 }
 
 .login-form {
@@ -160,15 +163,27 @@ async function handleSubmit() {
 }
 
 .field label {
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   font-weight: 600;
-  color: var(--p-surface-700, #3f3f46);
+  color: #475569;
+  letter-spacing: 0.01em;
 }
 
 .login-btn {
-  background: var(--p-primary-600, #dc2626);
-  border-color: var(--p-primary-600, #dc2626);
+  margin-top: 0.25rem;
+  height: 44px;
   font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
 }
 
 .expired-notice {

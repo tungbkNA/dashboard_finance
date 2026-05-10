@@ -44,6 +44,8 @@ public class ProjectMonthRecordMapper {
                 .active(r.isActive())
                 .isFirstMonth(isFirstMonth)
                 .price(p.getPrice())
+                .customerName(p.getCustomer() != null ? p.getCustomer().getCustomerName() : null)
+                .representUserName(p.getRepresentUser() != null ? p.getRepresentUser().getDisplayName() : null)
                 .createdAt(r.getCreatedAt())
                 .updatedAt(r.getUpdatedAt())
                 .affectedMonths(affectedMonths)

@@ -15,6 +15,7 @@ public class RoleMapper {
     public RoleResponse toResponse(Role role, long userCount) {
         return new RoleResponse(
                 role.getId(),
+                role.getRoleCode(),
                 role.getRoleName(),
                 role.getDescription(),
                 role.isActive(),
@@ -29,6 +30,7 @@ public class RoleMapper {
                 .collect(Collectors.toList());
         return new RoleResponse.RoleDetailResponse(
                 role.getId(),
+                role.getRoleCode(),
                 role.getRoleName(),
                 role.getDescription(),
                 role.isActive(),

@@ -24,7 +24,7 @@ public class PermissionController {
     private final RoleMapper roleMapper;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('MANAGE_ROLE')")
+    @PreAuthorize("hasAuthority('PERMISSION_VIEW')")
     public ResponseEntity<ApiResponse<List<PermissionResponse>>> listAll() {
         List<PermissionResponse> perms = permissionRepository.findAllByOrderBySortOrderAsc()
                 .stream()

@@ -7,6 +7,7 @@ import com.internal.projectmgmt.dto.role.UpdateRolePermissionsRequest;
 import com.internal.projectmgmt.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +24,18 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('MANAGE_ROLE')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW')")
     public ResponseEntity<ApiResponse<List<RoleResponse>>> listAll() {
         return ResponseEntity.ok(ApiResponse.success(roleService.listAll()));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ROLE_VIEW')")
+    public ResponseEntity<ApiResponse<Page<RoleResponse>>> search(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(ApiResponse.success(roleService.search(keyword, page, size)));
     }
 
     @PostMapping
@@ -36,7 +46,7 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGE_ROLE')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW')")
     public ResponseEntity<ApiResponse<RoleResponse.RoleDetailResponse>> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(roleService.getById(id)));
     }
@@ -59,7 +69,7 @@ public class RoleController {
     }
 
     @GetMapping("/{id}/permissions")
-    @PreAuthorize("hasAuthority('MANAGE_ROLE')")
+    @PreAuthorize("hasAuthority('ROLE_VIEW')")
     public ResponseEntity<ApiResponse<RoleResponse.RoleDetailResponse>> getPermissions(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(roleService.getById(id)));
     }

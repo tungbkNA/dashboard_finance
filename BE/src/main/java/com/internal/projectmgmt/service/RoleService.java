@@ -9,6 +9,10 @@ import com.internal.projectmgmt.mapper.RoleMapper;
 import com.internal.projectmgmt.repository.PermissionRepository;
 import com.internal.projectmgmt.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +52,7 @@ public class RoleService {
         }
         Role role = Role.builder()
                 .roleName(request.roleName())
+                .roleCode(generateRoleCode(request.roleName()))
                 .description(request.description())
                 .active(true)
                 .deleted(false)
@@ -63,9 +68,24 @@ public class RoleService {
             throw new AppException("ROLE_NAME_DUPLICATE", "Tên role đã tồn tại");
         }
         role.setRoleName(request.roleName());
+        role.setRoleCode(generateRoleCode(request.roleName()));
         role.setDescription(request.description());
+        if (request.active() != null) {
+            role.setActive(request.active());
+        }
         role = roleRepository.save(role);
         return roleMapper.toResponse(role, roleRepository.countActiveUsersByRoleId(id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RoleResponse> search(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "roleName"));
+        Page<Role> rolePage = roleRepository.searchRoles(keyword == null ? "" : keyword.trim(), pageable);
+        return rolePage.map(r -> roleMapper.toResponse(r, roleRepository.countActiveUsersByRoleId(r.getId())));
+    }
+
+    private String generateRoleCode(String roleName) {
+        return roleName.trim().toUpperCase().replaceAll("\\s+", "_");
     }
 
     @Transactional

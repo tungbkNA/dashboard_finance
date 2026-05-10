@@ -29,6 +29,8 @@ export interface ProjectMonthRecordDetail {
   active: boolean
   isFirstMonth: boolean
   price: number | null
+  customerName: string | null
+  representUserName: string | null
   createdAt: string | null
   updatedAt: string | null
 
