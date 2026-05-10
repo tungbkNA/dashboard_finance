@@ -253,7 +253,7 @@ function liveVal(field: string): number {
 }
 
 const liveFormulas = computed<Record<string, number | null>>(() => {
-  if (!detail.value) return {}
+  if (!detail.value) return {} as Record<string, number | null>
 
   const g2TongSlsxDuKien = liveVal('g2SlsxTuSx') + liveVal('g2SlsxOs') + liveVal('g2LienKet')
 
