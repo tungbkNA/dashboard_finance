@@ -29,6 +29,7 @@
 import { ref, onMounted } from 'vue'
 import Dialog from 'primevue/dialog'
 import Tree from 'primevue/tree'
+import type { TreeNode } from 'primevue/treenode'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import type { Permission } from '@/types/role'
@@ -40,7 +41,7 @@ const emit = defineEmits<{ saved: []; close: [] }>()
 const visible = ref(true)
 const loadingPerms = ref(false)
 const saving = ref(false)
-const treeNodes = ref<unknown[]>([])
+const treeNodes = ref<TreeNode[]>([])
 const selectedKeys = ref<Record<string, { checked: boolean; partialChecked: boolean }>>({})
 
 onMounted(async () => {
